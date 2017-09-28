@@ -1,0 +1,50 @@
+body, html {
+    height: 100%;
+    /* The image used */
+    background-image: url("food5.jpeg");
+    
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        font-family: 'Slabo 27px', serif;
+        flex: 1
+}
+.header .container{
+    text-align: center;
+
+}
+.header h1{
+    padding-top: 10%;
+}
+
+.fixed-footer{
+    width: 100%;
+    position: fixed;        
+    background: #333;
+    padding: 10px 0;
+    color: #fff;
+}
+}
+.fixed-footer{
+    bottom: 0;
+}
+.container{
+    width: 80%;
+    margin: 0 auto; 
+}
+.main {
+    flex: 1 1 0;
+    display: flex;
+}
+.container-fluid {
+    display: flex;
+}
+
+
+
+
+
+
+
+

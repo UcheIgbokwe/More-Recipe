@@ -1,0 +1,36 @@
+body, html {
+    height: 100%;
+    /* The image used */
+    background-image: url("food6.jpeg");
+    
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        font-family: 'Slabo 27px', serif;
+}
+.main {
+    flex: 1 1 0;
+    display: flex;
+}
+.container-fluid {
+    display: flex;
+}
+.col-6 {
+    overflow-y: auto;
+}
+.scrolltable {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+
+p {
+    color: white;
+    text-shadow: 0.07em 0 black, 0 0.07em black, -0.07em 0 black, 0 -0.07em black;
+}
+h1{
+    color: white;
+    text-shadow: 0.07em 0 black, 0 0.07em black, -0.07em 0 black, 0 -0.07em black;
+}
