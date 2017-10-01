@@ -1,7 +1,11 @@
 body, html {
     height: 100%;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
     /* The image used */
-    background-image: url("food4.jpg");
+    background: linear-gradient(rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.7)), url("kitchen.jpeg");
     
         /* Center and scale the image nicely */
         background-position: center;
@@ -17,6 +21,25 @@ body, html {
     padding-top: 10%;
 }
 
+
+  
+ 
+  
+  .Absolute-Center {
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+  }
+  
+  .Absolute-Center.is-Responsive {
+    width: 50%; 
+    height: 50%;
+    min-width: 200px;
+    max-width: 400px;
+    padding: 40px;
+  }
+  
+  
 
 
 

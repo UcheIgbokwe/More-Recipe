@@ -11,14 +11,20 @@
     <link rel="stylesheet" type="text/css" href="profile.css">
     <!--Google Font-->
     <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Pattaya" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Germania+One" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Awesome Fonts-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
      
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="#">MORE RECIPES</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#" style="font-family: 'Pattaya', sans-serif; color:white; font-size: 20pt">
+          <img src="mr.jpg" width="50" height="50" class="d-inline-block align-top" alt="">
+          More Recipes
+        </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -26,131 +32,44 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="index.html">Home </a>
+            <a class="nav-link" href="index.html" style="font-family: 'Germania One', cursive">Home </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="ourrecipe.html">Recipes</a>
+            <a class="nav-link" href="ourrecipe.html" style="font-family: 'Germania One', cursive">Recipes</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="catalog.html">Favorites</a>
+            <a class="nav-link" href="catalog.html" style="font-family: 'Germania One', cursive">Favorites</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="addrecipe.html">Basket</a>
+            <a class="nav-link" href="addrecipe.html" style="font-family: 'Germania One', cursive">Basket</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Profile<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="#" style="font-family: 'Germania One', cursive">Profile<span class="sr-only">(current)</span></a>
           </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
         </form>
       </div>
     </nav>
 
-    <!--Profile-->
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-4">
-          <img src="chef2.jpeg" class="img-circle" alt="avatar">
+    <div class="card">
+        <div class="imgBx">
+            <img src="profile.jpg">
         </div>
-          <div class="col-sm-8">
-              <ul class="nav nav-tabs">
-                  <li class="nav-item">
-                      <a href="" data-target="#profile" data-toggle="tab" class="nav-link active">Profile</a>
-                  </li>
-                  <li class="nav-item">
-                      <a href="" data-target="#messages" data-toggle="tab" class="nav-link">Notification</a>
-                  </li>
-              </ul>
-              <div class="tab-content py-4">
-                  <div class="tab-pane active" id="profile">
-                      <h5 class="mb-3">User Profile</h5>
-                      <div class="row">
-                          <div class="col-md-6">
-                              <h6>Afam Adedeji</h6>
-                              <p>
-                                  Chef
-                              </p>
-                              <h6><strong>Goal</strong></h6>
-                              <p>
-                                  Every food lover is welcome to More-Recipes.
-  The goal of More-Recipes is being the center point for food lovers all over the continent.
-  
-                              </p>
-                          </div>
-                          
-                          <div class="col-md-12">
-                              <h5 class="mt-2"><span class="fa fa-clock-o ion-clock float-right"></span> Recent Activity</h5>
-                              <table class="table table-sm table-hover table-striped">
-                                  <tbody>                                    
-                                      <tr>
-                                          <td>
-                                              <strong>Abby</strong> joined ACME Project Team in <strong>`Collaboration`</strong>
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td>
-                                              <strong>Gary</strong> deleted My Board1 in <strong>`Discussions`</strong>
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td>
-                                              <strong>Kensington</strong> deleted MyBoard3 in <strong>`Discussions`</strong>
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td>
-                                              <strong>John</strong> deleted My Board1 in <strong>`Discussions`</strong>
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td>
-                                              <strong>Skell</strong> deleted his post Look at Why this is.. in <strong>`Discussions`</strong>
-                                          </td>
-                                      </tr>
-                                  </tbody>
-                              </table>
-                          </div>
-                      </div>
-                      <!--/row-->
-                  </div>
-                  <div class="tab-pane" id="messages">
-                      <div class="alert alert-info alert-dismissable">
-                          <a class="panel-close close" data-dismiss="alert">×</a> This is an <strong>.alert</strong>. Use this to show important messages to the user.
-                      </div>
-                      <table class="table table-hover table-striped">
-                          <tbody>                                    
-                              <tr>
-                                  <td>
-                                     <span class="float-right font-weight-bold">3 hrs ago</span> Here is your a link to the latest summary report from the..
-                                  </td>
-                              </tr>
-                              <tr>
-                                  <td>
-                                     <span class="float-right font-weight-bold">Yesterday</span> There has been a request on your account since that was..
-                                  </td>
-                              </tr>
-                              <tr>
-                                  <td>
-                                     <span class="float-right font-weight-bold">9/10</span> Porttitor vitae ultrices quis, dapibus id dolor. Morbi venenatis lacinia rhoncus. 
-                                  </td>
-                              </tr>
-                              <tr>
-                                  <td>
-                                     <span class="float-right font-weight-bold">9/4</span> Vestibulum tincidunt ullamcorper eros eget luctus. 
-                                  </td>
-                              </tr>
-                              <tr>
-                                  <td>
-                                     <span class="float-right font-weight-bold">9/4</span> Maxamillion ais the fix for tibulum tincidunt ullamcorper eros. 
-                                  </td>
-                              </tr>
-                          </tbody> 
-                      </table>
-                  </div>
-      </div>
-  </div>
+        <div class="details">
+            <h1>Nneka Adedeji</h1>
+            <h2>Chef</h2>
+            <p>Guy Fier born Guy Ramsay Ferry; January 22, 1968)is an American restaurateur, author, 
+                game show host, and television personality. He co-owns three restaurants in California, 
+                licenses his name to restaurants in New York City and Las Vegas, Nevada, and is known 
+                for his television series on the Food Network. </p>
+        </div>
+    </div>
+    
+    
+
   
 
     

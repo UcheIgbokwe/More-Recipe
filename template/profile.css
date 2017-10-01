@@ -1,7 +1,14 @@
 body, html {
     height: 100%;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
     /* The image used */
-    background-image: url("");
+    background: linear-gradient(rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.7)), url("food12.jpeg");
+ 
     
         /* Center and scale the image nicely */
         background-position: center;
@@ -9,8 +16,57 @@ body, html {
         background-size: cover;
         font-family: 'Slabo 27px', serif;
 }
-.rpic img{
-	border-radius: 50%;
-	border-width: 5px;
-	border-style: solid;
-	border-color: #09aacc;
+.card{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 400px;
+    height: 500px;
+    background: #262626;
+    overflow: hidden;
+
+}
+.card .imgBx,
+.card .details
+{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    box-sizing: border-box;
+    transition: .5s;
+
+}
+.card .imgBx{
+    top:0;
+    left:0;
+
+}
+.card:hover .imgBx{
+    top:0;
+    left: -100%;
+}
+.card .imgBx img{
+    width: 100%;
+}
+.card .details{
+    background: #262626;
+    top: 0;
+    left: 100%;
+    padding: 60px 30px;
+}
+.card:hover .details{
+    top:0;
+    left:0;
+}
+.card .details h1{
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 0 0 10px;
+    border-bottom: 2px solid #fff;
+}
+.card .details p{
+    margin: 20px 0 0;
+    color: #fff;
+}
