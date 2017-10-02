@@ -1,13 +1,22 @@
-var express = require('express'); 
-var app = express();
-var bodyParser = require('body-parser'); 
+const express=require('express');
+const bodyParser=require('body-parser');
+const recipe=require('./server/controllers/recipe');
+const review=require('./server/controllers/review');
+const app=express();
 
+const config=require('./server/controllers/index');
 
-app.use(bodyParser.json());  
+app.use(bodyParser.json());
 
-app.use(require('./server/controllers'));
+app.use('/api/v1/recipe',recipe);
+app.use('/api/v1/recipe/review',review);
 
+app.get('/',(req,res,next)=>{
+    res.json({
+        message:'route is working'
+    })
+});
 
-app.listen('4090', function(){
-	console.log('server is running');
+app.listen(config.port,()=>{
+    console.log('server is running at port', config.port);
 });
