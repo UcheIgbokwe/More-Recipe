@@ -6,18 +6,21 @@ global.recipe = [
         name: 'Egusi soup',
         ingredients: 'Green leaf',
         directions: 'cook',
+        upvotes: 90,
     },
     {
         id: 2,
         name: 'Rice',
         ingredients: 'water',
         directions: 'parboil',
+        upvotes: 50,
     },
     {
         id: 3,
         name: 'Pizza',
         ingredients: 'toppings',
         directions: 'grill',
+        upvotes: 60,
     }
   ];
 
@@ -32,7 +35,7 @@ router.get('/',(req, res, next)=>{
 
 router.post('/',(req, res,next)=>{
     if(!req.body.name){
-        res.status(400).json({
+        res.status(404).json({
             message: 'Name is invalid',
             error: true,
         });
@@ -81,7 +84,7 @@ router.get('/:recipeid',(req,res,next)=>{
 router.delete('/:recipeid',(req,res,next)=>{
     for(let i=0; i < global.recipe.length; i++){
         if(global.recipe[i].id === parseInt(req.params.recipeid,10)){
-            global.recipe.splice(i,1);
+            global.recipe.splice(i, 1);
             res.status(200).json({
                 message: 'Recipe deleted',
                 error: false
@@ -92,6 +95,16 @@ router.delete('/:recipeid',(req,res,next)=>{
         message:'Recipe not found',
         error: true
     });
+});
+
+router.get('/recipe?sort=upvotes&order=des',(req,res,next)=>{
+    if(request.query.sort){
+        const sorted = global.recipe.id.sort((a,b)=> a-b);
+        res.status(200).json({
+            recipes: sorted,
+            error: false
+        });
+    }
 });
 
 

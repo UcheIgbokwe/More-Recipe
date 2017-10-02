@@ -4,8 +4,9 @@
   "description": "More-Recipes provides a platform for users to share the awesome and exciting  recipe ideas they have invented or learnt.  \r Suppose a user comes up with a recipe,  he/she can post it on More-Recipes and  get feedback in form of reviews and votes from other users \r who explore that recipe. Users can also keep a list of their favorite recipes on the application.",
   "main": "app.js",
   "scripts": {
-    "start": "babel-node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc mocha --compilers js:babel-core/register ./server/test.js",
+    "start": "babel-node app.js --presets es2015,stage-2",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -13,27 +14,32 @@
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/UcheIgbokwe/More-Recipe/issues"
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^12.0.1",
+    "eslint-plugin-import": "^2.7.0"
   },
-  "homepage": "https://github.com/UcheIgbokwe/More-Recipe#readme",
   "dependencies": {
+    "babel": "^6.23.0",
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.26.0",
     "body-parser": "^1.18.2",
-    "express": "^4.15.5",
-    "morgan": "^1.9.0"
-  },
-  "devDependencies": {
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
-    "eslint-config": "^0.3.0",
-    "eslint-config-airbnb": "^15.1.0",
-    "eslint-config-airbnb-base": "^12.0.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-react": "^7.4.0",
+    "coveralls": "^2.13.3",
+    "eslint": "^4.8.0",
+    "express": "^4.16.1",
+    "istanbul": "^0.4.5",
     "mocha": "^3.5.3",
     "mocha-lcov-reporter": "^1.3.0",
-    "nodemon": "^1.12.1"
+    "morgan": "^1.9.0",
+    "nyc": "^11.2.1",
+    "request": "^2.83.0"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
   }
 }
