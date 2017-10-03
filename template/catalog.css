@@ -194,7 +194,7 @@ blockquote > p {
   width:200px;
   height:200px;
   background-color: red;
-  border-radius: 100%;
+  border-radius: 15px 30px 45px;
   border: 4px solid black;
   margin: auto;
 }
