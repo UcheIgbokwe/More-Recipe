@@ -36,7 +36,7 @@ router.get('/',(req, res, next)=>{
 });
 
 router.post('/',(req, res,next)=>{
-    if(!req.body.id || !req.body.name || !req.body.ingredients || !req.body.directions || !req.body.upvotes){
+    if(!req.body.id ||!req.body.name ||!req.body.ingredients ||!req.body.directions ||!req.body.upvotes){
         res.status(404).json({
             message: 'Enter valid fields',
             error: true,
