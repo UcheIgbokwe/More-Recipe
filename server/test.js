@@ -23,14 +23,7 @@ describe('Tests for API endpoints',() =>{
                 });
             });
         });
-        describe('POST /api/v1/recipe', ()=>{
-            it('it should POST a recipe', (success)=>{
-                chai.request(app).post('/api/v1/recipe').end((error, res)=>{
-                    expect(res).to.have.status(200);
-                    success();
-                });
-            });
-        });
+        
         describe('PUT /api/v1/recipe/:recipeid', ()=>{
             it('it should PUT all recipe', (success)=>{
                 chai.request(app).put('/api/v1/recipe/1').end((error, res)=>{
