@@ -1,15 +1,16 @@
-const express=require('express');
-const bodyParser=require('body-parser');
-const logger=require('morgan');
+import express from 'express';
+import bodyParser from 'body-parser';
+import logger from 'morgan';
 
-const recipe=require('./server/controllers/recipe');
-const review=require('./server/controllers/review');
+import recipe from './server/controllers/recipe';
+import review from './server/controllers/review';
+
+import config from './server/controllers/index';
 
 const app=express();
 
 app.use(logger('dev'));
 
-const config=require('./server/controllers/index');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -27,4 +28,4 @@ app.listen(config.port,()=>{
     console.log('server is running at port', config.port);
 });
 
-module.exports = app
+export default app;

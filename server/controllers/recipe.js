@@ -1,4 +1,6 @@
-const router=require('express').Router();
+import express from 'express';
+
+const router = express.Router();
 
 global.recipe = [
     {
@@ -34,7 +36,7 @@ router.get('/',(req, res, next)=>{
 });
 
 router.post('/',(req, res,next)=>{
-    if(!req.body.name){
+    if(!req.body.name || !req.body.ingredients || !req.body.directions || !req.body.upvotes){
         res.status(404).json({
             message: 'Name is invalid',
             error: true,
@@ -108,4 +110,4 @@ router.get('/recipe?sort=upvotes&order=des',(req,res,next)=>{
 });
 
 
-module.exports=router;
+export default router;
