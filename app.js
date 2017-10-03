@@ -6,6 +6,7 @@ const recipe=require('./server/controllers/recipe');
 const review=require('./server/controllers/review');
 
 const app=express();
+const cache = {};
 
 app.use(logger('dev'));
 
@@ -22,6 +23,15 @@ app.get('/',(req,res,next)=>{
         message:'route is working'
     });
 });
+
+app.post('/', function(req, res) {
+    let query = req.query;
+    Object.keys(query).forEach(function(key) {
+      cache[key] = query[key];
+    });
+    res.status(200).end();
+  });
+  
 
 app.listen(config.port,()=>{
     console.log('server is running at port', config.port);

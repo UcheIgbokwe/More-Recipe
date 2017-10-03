@@ -34,7 +34,7 @@ router.get('/',(req, res, next)=>{
 });
 
 router.post('/',(req, res,next)=>{
-    if(!req.body.name){
+    if(!req.body.id ||!req.body.name ||!req.body.ingredients ||!req.body.directions){
         res.status(404).json({
             message: 'Name is invalid',
             error: true,

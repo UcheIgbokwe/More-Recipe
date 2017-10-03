@@ -23,6 +23,21 @@ describe('Tests for API endpoints',() =>{
                 });
             });
         });
+        describe('POST /api/v1/recipe', () => {
+            const recipe = {
+                id: 1,
+                name: 'Egusi soup',
+                ingredients: 'Green leaf',
+                directions: 'cook',
+                upvotes: 90,
+            }
+            it('it should POST recipes',(done)=>{
+                chai.request(app).post('/api/v1/recipe').send(recipe).end((error, res)=>{
+                    expect(res).to.have.status(200);
+                    done();
+                });
+            });
+        });
         
         describe('PUT /api/v1/recipe/:recipeid', ()=>{
             it('it should PUT all recipe', (success)=>{
