@@ -20,7 +20,6 @@
         "requireReturn": true,
         "requireReturnType": true,
         "requireParamDescription": false,
-        "linebreak-style": 0,
         "requireReturnDescription": true
       }],
       "require-jsdoc": ["error", {
