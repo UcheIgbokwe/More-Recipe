@@ -19,6 +19,18 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
     });
+    Recipe.belongsTo(models.Review, {
+      foreignKey: 'recipeId',
+      as: 'reviews',
+    });
+    Recipe.belongsTo(models.Vote, {
+      foreignKey: 'recipeId',
+      as: 'votes',
+    });
+    Recipe.belongsTo(models.Favorite, {
+      foreignKey: 'recipeId',
+      as: 'favorites',
+    });
   };
 
   return Recipe;
