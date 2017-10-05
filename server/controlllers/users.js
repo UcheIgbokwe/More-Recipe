@@ -5,7 +5,7 @@ import Validator from 'validatorjs';
 import _ from 'lodash';
 import db from '../models/';
 
-const User = db.User;
+const { User } = db.User;
 
 dotenv.config();
 const secret = process.env.SECRET_TOKEN;
@@ -19,7 +19,7 @@ const usersController = {
    * @returns {obj} User
    */
   create(request, response) {
-    const body = request.body;
+    const { body } = request.body;
     const rules = {
       firstName: 'required|string',
       lastName: 'required|string',
@@ -32,7 +32,7 @@ const usersController = {
     if (validation.fails()) {
       return response.json({ error: validation.errors.all() });
     }
-    User.findOne({ where: { emailAddress: body.emailAddress } })
+    User.findOne({ where: { email: body.email } })
       .then((user) => {
         if (user) {
           return response.status(404).json({ message: 'User already exists. Try again.' });
@@ -41,7 +41,7 @@ const usersController = {
         User.create({
           firstName: request.body.firstName,
           lastName: request.body.lastName,
-          emailAddress: request.body.emailAddress,
+          email: request.body.email,
           password: hashedPassword
         })
           .then((savedUser) => {
@@ -60,7 +60,7 @@ const usersController = {
    * @returns {json} user
    */
   login(request, response) {
-    const body = request.body;
+    const { body } = request.body;
 
     const rules = {
       email: 'required|email',
