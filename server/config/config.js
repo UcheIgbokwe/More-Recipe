@@ -11,14 +11,6 @@ module.exports = {
     dialect: 'postgres'
   },
   test: {
-      username: 'root',
-      password: null,
-      database: 'database_test',
-      host: '127.0.0.1',
-      dialect: 'mysql',
-    logging: false
-  },
-  production: {
     username: 'postgres',
     password: 'Ebubechi',
     database: 'MoreRecipe',
