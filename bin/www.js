@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import http from 'http';
-import app from '../app';
+import app from '../server/app';
 
 dotenv.config();
 const port = (process.env.PORT || 8080);
