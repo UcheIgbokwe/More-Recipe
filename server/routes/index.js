@@ -1,10 +1,12 @@
+import express from 'express';
 import usersController from '../controlllers/users';
 import recipesController from '../controlllers/recipes';
 import reviewsController from '../controlllers/reviews';
 import authorization from '../middlewares/tokenValidator';
 import favoritesController from '../controlllers/favorites';
 
-const routes = (router) => {
+const router = express.Router();
+
   router.get('/', (request, response) => {
     response.status(200)
       .send({ message: 'Welcome to Recipesforall!' });
@@ -32,7 +34,7 @@ const routes = (router) => {
    */
   router.post('/users/:id/recipes', authorization.verifyToken, favoritesController.create);
   router.get('/users/:id/recipes', favoritesController.getAll);
-};
 
-export default routes;
+
+export default router;
 

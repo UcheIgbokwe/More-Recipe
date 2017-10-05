@@ -4,268 +4,134 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _dotenv = require('dotenv');
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
+var _bcryptjs = require('bcryptjs');
+
+var _bcryptjs2 = _interopRequireDefault(_bcryptjs);
 
 var _jsonwebtoken = require('jsonwebtoken');
 
 var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
-var _validator = require('validator');
+var _validatorjs = require('validatorjs');
 
-var _validator2 = _interopRequireDefault(_validator);
+var _validatorjs2 = _interopRequireDefault(_validatorjs);
 
-var _models = require('../models');
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _models = require('../models/');
 
 var _models2 = _interopRequireDefault(_models);
 
-var _validateSignup2 = require('../functions/validateSignup');
-
-var _validateSignup3 = _interopRequireDefault(_validateSignup2);
-
-var _validateLogin2 = require('../functions/validateLogin');
-
-var _validateLogin3 = _interopRequireDefault(_validateLogin2);
-
-var _encryption = require('../functions/encryption');
-
-var passwordHelper = _interopRequireWildcard(_encryption);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var User = _models2.default.User.User;
 
-var helper = new passwordHelper.default();
-var user = _models2.default.User;
-var secret = process.env.SEC;
-/**
- * 
- * 
- * @export
- * @class User
- */
 
-var User = function () {
-  function User() {
-    _classCallCheck(this, User);
-  }
+_dotenv2.default.config();
+var secret = process.env.SECRET_TOKEN;
 
-  _createClass(User, [{
-    key: 'createUser',
+var usersController = {
+  /**
+    * Controller to create a new user
+   *
+   * @param {any} request
+   * @param {any} response
+   * @returns {obj} User
+   */
+  create: function create(request, response) {
+    var body = request.body.body;
 
-    /**
-     * 
-     * 
-     * @param {any} req 
-     * @param {any} res 
-     * @returns 
-     * @memberof User
-     */
-    /**
-     * 
-     * 
-     * @param {any} req 
-     * @param {any} res 
-     * @returns 
-     * @memberof User
-     */
-    value: function createUser(req, res) {
-      console.log(req.body);
+    var rules = {
+      firstName: 'required|string',
+      lastName: 'required|string',
+      email: 'required|email',
+      password: 'required|min:6|max:24|alpha_num',
+      confirmPassword: 'required|same:password'
+    };
 
-      var _validateSignup = (0, _validateSignup3.default)(req.body),
-          errors = _validateSignup.errors,
-          isvalid = _validateSignup.isvalid;
-
-      if (!isvalid) {
-        return res.status(400).json(errors);
-      }
-      user.findOne({
-        where: { email: req.body.email.toLowerCase() }
-      }).catch(function () {
-        return res.status(500).send('A server error ocurred, Please try again later');
-      }).then(function (existing) {
-        if (!existing) {
-          console.log(req.body.password);
-          var Password = helper.hashPassword(req.body.password);
-          user.create({
-            firstName: req.body.firstName.toLowerCase(),
-            lastName: req.body.lastName.toLowerCase(),
-            email: req.body.email.toLowerCase(),
-            password: Password
-          }).then(function (newUser) {
-
-            // const token = jwt.sign({
-            //   id: newUser.dataValues.id,
-            //   firstName: newUser.dataValues.firstName,
-            //   lastName: newUser.dataValues.lastName,
-            //   email: newUser.dataValues.email,
-            // }, //secret, { expiresIn: 86400 });
-
-            if (newUser) {
-              return res.status(201).json({
-                status: 'success',
-                // token,
-                user: newUser
-              });
-            } else {
-              return res.status(403).json({
-                status: 'Fail',
-                message: 'User with email already exists'
-              });
-            }
-          }).catch(function (error) {
-            return res.status(500).json({
-              status: 'fail',
-              message: error
-            });
-          });
-        }
-      });
-      return this;
+    var validation = new _validatorjs2.default(body, rules);
+    if (validation.fails()) {
+      return response.json({ error: validation.errors.all() });
     }
-
-    /**
-     * 
-     * 
-     * @param {any} req 
-     * @param {any} res 
-     * @returns 
-     * @memberof User
-     */
-
-  }, {
-    key: 'userLogin',
-    value: function userLogin(req, res) {
-      var _validateLogin = (0, _validateLogin3.default)(req.body),
-          errors = _validateLogin.errors,
-          isvalid = _validateLogin.isvalid;
-
-      if (!isvalid) {
-        return res.status(400).json(errors);
+    User.findOne({ where: { email: body.email } }).then(function (user) {
+      if (user) {
+        return response.status(404).json({ message: 'User already exists. Try again.' });
       }
-      user.findOne({
-        where: { email: req.body.email.toLowerCase() }
-      }).then(function (foundUser) {
-        if (foundUser) {
-          var result = helper.decrypt(req.body.password, foundUser.dataValues.password);
-          if (result) {
-            var token = _jsonwebtoken2.default.sign({
-              id: foundUser.dataValues.id,
-              firstName: foundUser.dataValues.firstName,
-              lastName: foundUser.dataValues.lastName,
-              email: foundUser.dataValues.email
-            }, secret, { expiresIn: 86400 });
-            res.status(200).json({
-              status: 'success',
-              token: token,
-              foundUser: foundUser
-            });
-          } else {
-            res.status(401).json({
-              status: 'fail',
-              message: 'Email and password don\'t match'
-            });
-          }
-        } else {
-          res.status(404).json({
-            status: 'fail',
-            message: 'user with email ' + req.body.email + ' not found'
-          });
-        }
-      });
-      return this;
-    }
-    /**
-     * 
-     * 
-     * @param {any} req 
-     * @param {any} res 
-     * @returns 
-     * @memberof User
-     */
-
-  }, {
-    key: 'delete',
-    value: function _delete(req, res) {
-      var password = req.body.password;
-      user.findOne({
-        where: {
-          id: req.decoded.id
-        }
-      }).then(function (foundUser) {
-        if (foundUser) {
-          var result = helper.decrypt(password, foundUser.dataValues.password);
-          if (result) {
-            user.destroy({
-              where: {
-                id: req.decoded.id
-              }
-            }).then(function () {
-              return res.status(200).send('Your account has been deleted successfully.');
-            }).catch(function () {
-              res.status(500).send('Unable to delete account now, please try again later');
-            });
-          }
-        }
-      });
-      return this;
-    }
-    /**
-     * 
-     * 
-     * @param {any} req 
-     * @param {any} res 
-     * @memberof User
-     */
-
-  }, {
-    key: 'updateUser',
-    value: function updateUser(req, res) {
-      // const firstname = req.body.firstname;
-      // const lastname = req.body.lastname;
-      var email = req.body.email;
-      var password = req.body.password;
-      var confirmPassword = req.body.confirmPassword;
-
-      if (!_validator2.default.isEmail(email)) {
-        return res.status(400).send('Email is not valid');
-      }
-      if (password !== confirmPassword) {
-        return res.status(400).json({
-          status: 'Fail',
-          message: 'Passwords don\'t match'
-        });
-      }
-      user.findOne({
-        where: {
-          id: req.decoded.id
-        }
-      }).then(function (foundUser) {
-        if (!foundUser) {
-          return res.status(401).send('Unauthorized!');
-        }
-        if (foundUser) {
-          var Update = {
-            email: email.toLowerCase() || foundUser.dataValues.email,
-            password: foundUser.dataValues.password || helper.hashPassword(password)
-          };
-          foundUser.update(Update).then(function () {
-            return res.status(200).send('Profile update successful');
-          }).catch(function (error) {
-            console.log(error);
-            return res.status(500).send('Internal server error. Unable to update profile');
-          });
-        }
+      var hashedPassword = _bcryptjs2.default.hashSync(request.body.password.trim());
+      User.create({
+        firstName: request.body.firstName,
+        lastName: request.body.lastName,
+        email: request.body.email,
+        password: hashedPassword
+      }).then(function (savedUser) {
+        var data = _lodash2.default.pick(savedUser, ['id', 'firstName', 'lastName']);
+        var authToken = _jsonwebtoken2.default.sign({ data: data }, secret, { expiresIn: 86400 });
+        response.status(200).json({ auth: true, user: data, token: authToken });
       }).catch(function (error) {
-        console.log(error);
-        return res.status(500).send('Internal server error. Unable to update profile');
+        return response.status(500).json({ error: error.message });
       });
-      return this;
+    }).catch(function () {
+      return response.status(500).json({ message: 'There was a problem registering the user.' });
+    });
+  },
+
+
+  /**
+   * Controller to log in an existing user
+   * @param {any} request
+   * @param {any} response
+   * @returns {json} user
+   */
+  login: function login(request, response) {
+    var body = request.body.body;
+
+
+    var rules = {
+      email: 'required|email',
+      password: 'required|min:6|max:24|alpha_num'
+    };
+
+    var validation = new _validatorjs2.default(body, rules);
+    if (validation.fails()) {
+      return response.json({ error: validation.errors.all() });
     }
-  }]);
 
-  return User;
-}();
+    var token = request.headers['x-access-token'];
+    if (!token) return response.status(401).json({ auth: false, message: 'No token provided.' });
 
-exports.default = User;
+    _jsonwebtoken2.default.verify(token, secret, function (error) {
+      if (error) return response.status(500).json({ auth: false, message: 'Failed to authenticate token.' });
+    });
+
+    User.findOne({
+      where: {
+        email: request.body.email
+      }
+    }).then(function (user) {
+      if (!user) {
+        return response.status(404).json({ message: 'Authentication failed. No user found.' });
+      }
+      if (user) {
+        var confirmPassword = _bcryptjs2.default.compareSync(request.body.password.trim(), user.password);
+        if (confirmPassword === false) {
+          response.status(401).json({ message: 'Authentication failed. Wrong password.' });
+        }
+      }
+
+      var data = _lodash2.default.pick(user, ['id', 'firstName', 'lastName']);
+      var myToken = _jsonwebtoken2.default.sign(data, secret, { expiresIn: 86400 });
+      var decoded = _jsonwebtoken2.default.verify(myToken, secret);
+      return response.status(201).send({ message: 'Log in successful', user: decoded, token: myToken });
+    }).catch(function (error) {
+      return response.send(error);
+    });
+  }
+};
+
+exports.default = usersController;

@@ -4,110 +4,96 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _dotenv = require('dotenv');
 
-var _models = require('../models');
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
+var _validatorjs = require('validatorjs');
+
+var _validatorjs2 = _interopRequireDefault(_validatorjs);
+
+var _jsonwebtoken = require('jsonwebtoken');
+
+var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+
+var _models = require('../models/');
 
 var _models2 = _interopRequireDefault(_models);
 
-var _validateReview2 = require('../functions/validateReview');
-
-var _validateReview3 = _interopRequireDefault(_validateReview2);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var Recipe = _models2.default.Recipes;
+var User = _models2.default.User;
+var Review = _models2.default.Reviews;
 
-var review = _models2.default.Review;
-var recipe = _models2.default.Recipe;
-var user = _models2.default.User;
+_dotenv2.default.config();
+var secret = process.env.SECRET_TOKEN;
 
-/**
- * 
- * 
- * @export
- * @class Review
- */
+var reviewsController = {
 
-var Review = function () {
-  function Review() {
-    _classCallCheck(this, Review);
-  }
+  // create(req, res) {
+  //   const body = req.body;
+  //   Recipe.findById(req.params.id)
+  //     .then((recipe) => {
+  //       if (!recipe) {
+  //         return res.status(404).json({ code: 404, message: 'This Recipe Does not exit' });
+  //       }
+  //       const token = req.headers['x-access-token'];
+  //       const decodedId = jwt.verify(token, secret);
+  //       return Review.create({
+  //         review: req.body.review,
+  //         recipeId: req.params.id,
+  //         userId: decodedId.data.id
+  //       })
+  //         .then(newrecipe => res.status(201).json({ code: 200, message: 'Review Posted ', data: newrecipe }))
+  //         .catch(error => res.status(404).json(error));
+  //     })
+  //     .catch(error => res.status(400).json(error.message));
+  // }
 
-  _createClass(Review, [{
-    key: 'addReview',
 
-    /**
-     * 
-     * 
-     * @param {any} req 
-     * @param {any} res 
-     * @returns 
-     * @memberof Review
-     */
-    value: function addReview(req, res) {
-      var _validateReview = (0, _validateReview3.default)(req.body),
-          errors = _validateReview.errors,
-          isvalid = _validateReview.isvalid;
+  create: function create(request, response) {
+    var body = request.body;
+    var rules = {
+      review: 'required|min:3'
+    };
 
-      if (!isvalid) {
-        return res.status(400).json(errors);
-      }
-      if (!req.params.recipeId) {
-        return res.status(400).send('Include ID of recipe to review');
-      }
-      if (isNaN(req.params.recipeId)) {
-        return res.status(400).send('Invalid recipeId. recipeId should be a number');
-      }
-      recipe.findById(req.params.recipeId).then(function (foundRecipe) {
-        if (!foundRecipe) {
-          return res.status(404).send('No recipe with id ' + req.params.recipeId);
-        }
-        if (foundRecipe) {
-          review.findOne({
-            where: {
-              id: req.params.recipeId,
-              $and: {
-                userId: req.decoded.id
-              }
-            }
-          }).then(function (foundReview) {
-            if (!foundReview) {
-              var newReview = {
-                content: req.body.comment,
-                userId: req.decoded.id,
-                recipeId: req.params.recipeId
-              };
-              review.create(newReview).then(function (createdReview) {
-                return res.status(201).json({
-                  status: 'Success',
-                  createdReview: createdReview
-                });
-              }).catch(function (error) {
-                return res.status(500).json({
-                  status: 'Fail. Unable to add review',
-                  error: error
-                });
-              });
-            }
-            if (foundReview) {
-              return res.status(403).send('You\'ve posted a review for this recipe already');
-            }
-          }).catch(function (error) {
-            return res.status(500).json({
-              status: 'Fail. Unable to add review',
-              error: error
-            });
-          });
-        }
-      }).catch(function () {
-        return res.status(500).send('Internal error ocurred. Please try again later');
-      });
-      return this;
+    var validation = new _validatorjs2.default(body, rules);
+    if (validation.fails()) {
+      return response.json({ error: validation.errors.all() });
     }
-  }]);
 
-  return Review;
-}();
+    var token = request.headers['x-access-token'];
+    if (!token) return response.status(401).send({ auth: false, message: 'No token provided.' });
 
-exports.default = Review;
+    var decodedId = _jsonwebtoken2.default.verify(token, secret);
+
+    User.findById(decodedId.data.id).then(function (user) {
+      if (!user) {
+        return response.status(404).json({ errorCode: 404, message: 'User not found.' });
+      }
+    }).catch(function (error) {
+      return response.status(400).json(error.message);
+    });
+
+    Recipe.findById(request.params.id).then(function (recipe) {
+      if (!recipe) {
+        return response.status(404).json({ code: 404, message: 'Recipe not found.' });
+      }
+
+      return Review.create({
+        review: request.body.review,
+        recipeId: request.params.id,
+        userId: decodedId.data.id
+      }).then(function (reviewPosted) {
+        return response.status(201).json({ statusCode: 201, message: 'Review created.', data: reviewPosted });
+      }).catch(function (error) {
+        return response.status(404).json(error.message);
+      });
+    }).catch(function (error) {
+      return response.status(400).json(error.message);
+    });
+  }
+};
+
+exports.default = reviewsController;

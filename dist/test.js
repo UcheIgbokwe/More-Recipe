@@ -1,7 +1,5 @@
 'use strict';
 
-var _mocha = require('mocha');
-
 var _chai = require('chai');
 
 var _chai2 = _interopRequireDefault(_chai);
@@ -10,118 +8,64 @@ var _chaiHttp = require('chai-http');
 
 var _chaiHttp2 = _interopRequireDefault(_chaiHttp);
 
-var _app = require('../app');
+var _app = require('../server/app');
 
 var _app2 = _interopRequireDefault(_app);
+
+var _models = require('../server/models');
+
+var _models2 = _interopRequireDefault(_models);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _chai2.default.use(_chaiHttp2.default);
 
-(0, _mocha.describe)('Tests for API endpoints', function () {
-    (0, _mocha.describe)('Handle valid endpoints', function () {
-        (0, _mocha.describe)('GET /api/v1/recipe', function () {
-            (0, _mocha.it)('it should GET all recipes', function (success) {
-                _chai2.default.request(_app2.default).get('/api/v1/recipe').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(200);
-                    success();
-                });
-            });
+describe('Tests for more-recipes API endpoints', function () {
+  describe('Handle all required endpoints', function () {
+    describe('GET api/v1/recipes', function () {
+      it('should GET all recipes', function (done) {
+        _chai2.default.request(_app2.default).get('/api/v1/recipes').end(function (error, response) {
+          (0, _chai.expect)(response).to.have.status(200);
+          done();
         });
-        (0, _mocha.describe)('GET /api/v1/recipe/:recipeid', function () {
-            (0, _mocha.it)('it should GET a recipe', function (success) {
-                _chai2.default.request(_app2.default).get('/api/v1/recipe/1').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(200);
-                    success();
-                });
-            });
-        });
-        (0, _mocha.describe)('POST /api/v1/recipe', function () {
-            var recipe = {
-                id: 1,
-                name: 'Egusi soup',
-                ingredients: 'Green leaf',
-                directions: 'cook',
-                upvotes: 90
-            };
-            (0, _mocha.it)('it should POST recipes', function (done) {
-                _chai2.default.request(_app2.default).post('/api/v1/recipe').send(recipe).end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(200);
-                    done();
-                });
-            });
-        });
+      });
 
-        (0, _mocha.describe)('PUT /api/v1/recipe/:recipeid', function () {
-            (0, _mocha.it)('it should PUT all recipe', function (success) {
-                _chai2.default.request(_app2.default).put('/api/v1/recipe/1').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(200);
-                    success();
-                });
-            });
+      it('should not GET all recipes', function (done) {
+        _chai2.default.request(_app2.default).get('/api/v1/recipe').end(function (error, response) {
+          (0, _chai.expect)(response).to.have.status(404);
+          done();
         });
-        (0, _mocha.describe)('DELETE /api/v1/recipe/:recipeid', function () {
-            (0, _mocha.it)('it should DELETE a recipe', function (success) {
-                _chai2.default.request(_app2.default).delete('/api/v1/recipe/1').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(200);
-                    success();
-                });
-            });
-        });
+      });
     });
 
-    (0, _mocha.describe)('Handle invalid endpoints', function () {
-        (0, _mocha.describe)('GET /api/v1/recipe', function () {
-            (0, _mocha.it)('it should GET all recipes returns false', function (success) {
-                _chai2.default.request(_app2.default).get('/api/v1/recip').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(404);
-                    success();
-                });
-            });
+    describe('GET api/v1/recipes/:id', function () {
+      it('should GET a recipe', function (done) {
+        _chai2.default.request(_app2.default).get('/api/v1/recipes/1').end(function (error, response) {
+          (0, _chai.expect)(response).to.have.status(200);
+          done();
         });
+      });
 
-        (0, _mocha.describe)('POST /api/v1/recipe', function () {
-            (0, _mocha.it)('it should POST a recipe return false', function (success) {
-                _chai2.default.request(_app2.default).post('/api/v1/recip').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
-        (0, _mocha.describe)('PUT /api/v1/recipe', function () {
-            (0, _mocha.it)('it should PUT a recipe return false', function (success) {
-                _chai2.default.request(_app2.default).put('/api/v1/recipe/:-1').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
-
-        (0, _mocha.describe)('DELETE /api/v1/recipe', function () {
-            (0, _mocha.it)('it should DELETE a recipe return false', function (success) {
-                _chai2.default.request(_app2.default).delete('/api/v1/recipe/-1').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
-
-        (0, _mocha.describe)('PUT /api/v1/recipe', function () {
-            (0, _mocha.it)('it should PUT a recipe return false', function (success) {
-                _chai2.default.request(_app2.default).put('/api/v1/recipe/:200').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
-
-        (0, _mocha.describe)('DELETE /api/v1/recipe', function () {
-            (0, _mocha.it)('it should DELETE a recipe return false', function (success) {
-                _chai2.default.request(_app2.default).delete('/api/v1/recipe/-1').end(function (error, res) {
-                    (0, _chai.expect)(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
+      // it('should not GET a recipe', (done) => {
+      //   chai.request(app).get('/api/v1/recipes/1000').end((error, response) => {
+      //     expect(response).to.have.status(404);
+      //     done();
+      //   });
+      // });
     });
+
+    describe('About page', function () {
+      it('should return true if "About" page does not exist', function () {
+        _chai2.default.request('/api/v1/about', function (error, response) {
+          (0, _chai.expect)(response.statusCode).to.equal(404);
+        });
+      });
+
+      it('should return true if "Contact" page does not exist', function () {
+        _chai2.default.request('/api/v1/contact', function (error, response) {
+          (0, _chai.expect)(response.statusCode).to.equal(404);
+        });
+      });
+    });
+  });
 });
