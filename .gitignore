@@ -19,3 +19,6 @@ tmp/
 .DS_Store
 
 !.keep
+dotenv environment variables file
+.env
+

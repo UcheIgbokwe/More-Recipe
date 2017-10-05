@@ -1,20 +1,21 @@
-const router=require('express').Router();
+import express from 'express';
+const router = express.Router();
 
 global.review = [
     {
         id: 1,
-        review:'nice recipe',
-        reviewer:'Ade'
+        review: 'nice recipe',
+        reviewer: 'Ade'
     },
     {
         id: 2,
-        review:'cool recipe',
-        reviewer:'Frank'
+        review: 'cool recipe',
+        reviewer: 'Frank'
     }
 ];
 
-router.post('/:recipeid',(req, res,next)=>{
-    if(!req.body.id){
+router.post('/:recipeid', (req, res, next) => {
+    if (!req.body.id) {
         res.status(400).json({
             message: 'id is invalid',
             error: true,

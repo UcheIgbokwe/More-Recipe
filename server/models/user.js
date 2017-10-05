@@ -1,5 +1,11 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+    },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -8,16 +14,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     email: {
       type: DataTypes.STRING,
+      unique: true,
       allowNull: false,
     },
-    phoneNumber: {
-      type: DataTypes.INTEGER,
+    password: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   });
@@ -31,9 +34,13 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'reviews',
     });
-    User.hasMany(models.Vote, {
+    User.hasMany(models.Upvote, {
       foreignKey: 'userId',
-      as: 'votes',
+      as: 'upvotes',
+    });
+    User.hasMany(models.Downvote, {
+      foreignKey: 'userId',
+      as: 'downvotes',
     });
     User.hasMany(models.Favorite, {
       foreignKey: 'userId',
