@@ -23,9 +23,9 @@ const usersController = {
     const rules = {
       firstName: 'required|string',
       lastName: 'required|string',
-      emailAddress: 'required|email',
+      email: 'required|email',
       password: 'required|min:6|max:24|alpha_num',
-      password_confirmation: 'required|same:password'
+      confirmPassword: 'required|same:password'
     };
 
     const validation = new Validator(body, rules);
@@ -63,7 +63,7 @@ const usersController = {
     const body = request.body;
 
     const rules = {
-      emailAddress: 'required|email',
+      email: 'required|email',
       password: 'required|min:6|max:24|alpha_num'
     };
 
@@ -81,7 +81,7 @@ const usersController = {
 
     User.findOne({
       where: {
-        emailAddress: request.body.emailAddress
+        email: request.body.email
       }
     })
       .then((user) => {
