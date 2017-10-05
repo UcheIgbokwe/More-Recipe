@@ -24,11 +24,6 @@ module.exports = {
       type: Sequelize.STRING,
       allowNull: false
     },
-    notification: {
-      type: Sequelize.BOOLEAN,
-      allowNull: true,
-      defaultValue: true
-    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

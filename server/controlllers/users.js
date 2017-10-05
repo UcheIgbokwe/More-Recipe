@@ -1,237 +1,108 @@
+import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import validate from 'validator';
-import models from '../models';
-import validateSignup from '../functions/validateSignup';
-import validateLogin from '../functions/validateLogin';
-import * as passwordHelper from '../functions/encryption';
+import Validator from 'validatorjs';
+import _ from 'lodash';
+import db from '../models/';
 
+const User = db.User;
 
-const helper = new passwordHelper.default();
-const user = models.User;
-const secret = process.env.SEC;
-/**
- * 
- * 
- * @export
- * @class User
- */
-export default class User {
+dotenv.config();
+const secret = process.env.SECRET_TOKEN;
+
+const usersController = {
   /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof User
+    * Controller to create a new user
+   *
+   * @param {any} request
+   * @param {any} response
+   * @returns {obj} User
    */
-  /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof User
-   */
-  createUser(req, res) {
-    console.log(req.body);
-    const { errors, isvalid } = validateSignup(req.body);
-    if (!(isvalid)) {
-      return res.status(400)
-        .json(errors);
+  create(request, response) {
+    const body = request.body;
+    const rules = {
+      firstName: 'required|string',
+      lastName: 'required|string',
+      emailAddress: 'required|email',
+      password: 'required|min:6|max:24|alpha_num',
+      password_confirmation: 'required|same:password'
+    };
+
+    const validation = new Validator(body, rules);
+    if (validation.fails()) {
+      return response.json({ error: validation.errors.all() });
     }
-    user.findOne({
-      where: { email: req.body.email.toLowerCase() }
-    })
-      .catch(() => res.status(500)
-        .send('A server error ocurred, Please try again later'))
-      .then((existing) => {
-        if (!existing) {
-          console.log(req.body.password);
-          const Password = helper.hashPassword(req.body.password);
-          user.create({
-            firstName: req.body.firstName.toLowerCase(),
-            lastName: req.body.lastName.toLowerCase(),
-            email: req.body.email.toLowerCase(),
-            password: Password
-          })
-          .then((newUser) => {
-
-              // const token = jwt.sign({
-              //   id: newUser.dataValues.id,
-              //   firstName: newUser.dataValues.firstName,
-              //   lastName: newUser.dataValues.lastName,
-              //   email: newUser.dataValues.email,
-              // }, //secret, { expiresIn: 86400 });
-
-              if(newUser){
-                return res.status(201)
-                  .json({
-                    status: 'success',
-                    // token,
-                    user: newUser
-                  });
-              }
-              else {
-                  return res.status(403)
-                    .json({
-                      status: 'Fail',
-                      message: 'User with email already exists'
-                    });
-              }
-              
-          })
-            .catch(error => res.status(500)
-              .json({
-                status: 'fail',
-                message: error
-              })
-            );
-
-        } 
-      });
-    return this;
-  }
-
-  /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof User
-   */
-  userLogin(req, res) {
-    const { errors, isvalid } = validateLogin(req.body);
-    if (!(isvalid)) {
-      return res.status(400)
-        .json(errors);
-    }
-    user.findOne({
-      where: { email: req.body.email.toLowerCase() }
-    })
-      .then((foundUser) => {
-        if (foundUser) {
-          const result = helper.decrypt(req.body.password, foundUser.dataValues.password);
-          if (result) {
-            const token = jwt.sign({
-              id: foundUser.dataValues.id,
-              firstName: foundUser.dataValues.firstName,
-              lastName: foundUser.dataValues.lastName,
-              email: foundUser.dataValues.email
-            }, secret, { expiresIn: 86400 });
-            res.status(200)
-              .json({
-                status: 'success',
-                token,
-                foundUser
-              });
-          } else {
-            res.status(401)
-              .json({
-                status: 'fail',
-                message: 'Email and password don\'t match'
-              });
-          }
-        } else {
-          res.status(404)
-            .json({
-              status: 'fail',
-              message: `user with email ${req.body.email} not found`
-            });
+    User.findOne({ where: { emailAddress: body.emailAddress } })
+      .then((user) => {
+        if (user) {
+          return response.status(404).json({ message: 'User already exists. Try again.' });
         }
-      });
-    return this;
-  }
+        const hashedPassword = bcrypt.hashSync((request.body.password).trim());
+        User.create({
+          firstName: request.body.firstName,
+          lastName: request.body.lastName,
+          emailAddress: request.body.emailAddress,
+          password: hashedPassword
+        })
+          .then((savedUser) => {
+            const data = _.pick(savedUser, ['id', 'firstName', 'lastName']);
+            const authToken = jwt.sign({ data }, secret, { expiresIn: 86400 });
+            response.status(200).json({ auth: true, user: data, token: authToken });
+          })
+          .catch(error => response.status(500).json({ error: error.message }));
+      }).catch(() => response.status(500).json({ message: 'There was a problem registering the user.' }));
+  },
+
   /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof User
+   * Controller to log in an existing user
+   * @param {any} request
+   * @param {any} response
+   * @returns {json} user
    */
-  delete(req, res) {
-    const password = req.body.password;
-    user.findOne({
+  login(request, response) {
+    const body = request.body;
+
+    const rules = {
+      emailAddress: 'required|email',
+      password: 'required|min:6|max:24|alpha_num'
+    };
+
+    const validation = new Validator(body, rules);
+    if (validation.fails()) {
+      return response.json({ error: validation.errors.all() });
+    }
+
+    const token = request.headers['x-access-token'];
+    if (!token) return response.status(401).json({ auth: false, message: 'No token provided.' });
+
+    jwt.verify(token, secret, (error) => {
+      if (error) return response.status(500).json({ auth: false, message: 'Failed to authenticate token.' });
+    });
+
+    User.findOne({
       where: {
-        id: req.decoded.id
+        emailAddress: request.body.emailAddress
       }
     })
-      .then((foundUser) => {
-        if (foundUser) {
-          const result = helper.decrypt(password, foundUser.dataValues.password);
-          if (result) {
-            user.destroy({
-              where: {
-                id: req.decoded.id
-              }
-            })
-              .then(() => res.status(200)
-                .send('Your account has been deleted successfully.'))
-              .catch(() => {
-                res.status(500)
-                  .send('Unable to delete account now, please try again later');
-              });
+      .then((user) => {
+        if (!user) {
+          return response.status(404).json({ message: 'Authentication failed. No user found.' });
+        }
+        if (user) {
+          const confirmPassword =
+          bcrypt.compareSync((request.body.password).trim(), user.password);
+          if (confirmPassword === false) {
+            response.status(401).json({ message: 'Authentication failed. Wrong password.' });
           }
         }
-      });
-    return this;
-  }
-  /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @memberof User
-   */
-  updateUser(req, res) {
-    // const firstname = req.body.firstname;
-    // const lastname = req.body.lastname;
-    const email = req.body.email;
-    const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
 
-    if (!validate.isEmail(email)) {
-      return res.status(400)
-        .send('Email is not valid');
-    }
-    if (password !== confirmPassword) {
-      return res.status(400)
-        .json({
-          status: 'Fail',
-          message: 'Passwords don\'t match'
-        });
-    }
-    user.findOne({
-      where: {
-        id: req.decoded.id
-      }
-    })
-      .then((foundUser) => {
-        if (!foundUser) {
-          return res.status(401)
-            .send('Unauthorized!');
-        }
-        if (foundUser) {
-          const Update = {
-            email: email.toLowerCase() || foundUser.dataValues.email,
-            password: foundUser.dataValues.password || helper.hashPassword(password)
-          };
-          foundUser.update(Update)
-            .then(() => res.status(200)
-                .send('Profile update successful'))
-            .catch((error) => {
-              console.log(error);
-              return res.status(500)
-                .send('Internal server error. Unable to update profile');
-            });
-        }
+        const data = _.pick(user, ['id', 'firstName', 'lastName']);
+        const myToken = jwt.sign(data, secret, { expiresIn: 86400 });
+        const decoded = jwt.verify(myToken, secret);
+        return response.status(201).send({ message: 'Log in successful', user: decoded, token: myToken, });
       })
-      .catch((error) => {
-        console.log(error);
-        return res.status(500)
-          .send('Internal server error. Unable to update profile');
-      });
-    return this;
+      .catch(error => response.send(error));
   }
-}
+};
+
+export default usersController;

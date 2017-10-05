@@ -1,333 +1,134 @@
-import models from '../models';
-import validateRecipe from '../functions/validateRecipe';
+import dotenv from 'dotenv';
+import Validator from 'validatorjs';
+import jwt from 'jsonwebtoken';
+import db from '../models/';
 
-const recipe = models.Recipe;
-/* const user = models.User;
-const review = models.Review; */
+const Recipe = db.Recipes;
+const User = db.User;
+const Review = db.Review;
 
 /**
- * 
- * 
- * @export
- * @class Recipe
+ * Get secret key from environment variable
  */
-export default class Recipe {
-  /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof Recipe
-   */
-  addRecipe(req, res) {
-    const { errors, isvalid } = validateRecipe(req.body);
-    if (!(isvalid)) {
-      return res.status(400)
-        .json(errors);
+dotenv.config();
+const secret = process.env.SECRET_TOKEN;
+
+const recipeController = {
+  create(request, response) {
+    const body = request.body;
+    const rules = {
+      recipeName: 'required|min:3',
+      ingredient: 'required',
+      recipeDirection: 'required:min:6'
+    };
+
+    const token = request.headers['x-access-token'];
+    if (!token) {
+      return response.status(401)
+        .send({ auth: false, message: 'No token provided.' });
     }
-    recipe.findOne({
-      where: {
-        name: req.body.name.toLowerCase(),
-        $and: {
-          userId: req.decoded.id
-        }
-      }
-    })
-      .then((foundRecipe) => {
-        if (foundRecipe) {
-          return res.status(403)
-            .json({
-              status: 'Fail',
-              message: 'You already have a recipe with this name'
-            });
-        }
-        if (!foundRecipe) {
-          recipe.create({
-            name: req.body.name.toLowerCase(),
-            userId: req.decoded.id,
-            ingredients: req.body.ingredients.toLowerCase(),
-            directions: req.body.description.toLowerCase()
-          })
-            .then((newRecipe) => {
-              res.status(201)
-                .json({
-                  status: 'success',
-                  recipe: newRecipe
-                });
-            })
-            .catch((error) => {
-              res.status(500)
-                .json({
-                  status: 'Fail',
-                  message: error
-                });
-            });
-        }
-      })
-      .catch((error) => {
-        res.status(500)
-          .json({
-            status: 'fail',
-            error
-          });
-      });
-    return this;
-  }
-  /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof Recipe
-   */
-  updateRecipe(req, res) {
-    if (!(req.params.recipeId)) {
-      return res.status(400)
-        .send('Include ID of recipe to update');
+
+    const decodedId = jwt.verify(token, secret);
+
+    const validation = new Validator(body, rules);
+    if (validation.fails()) {
+      return response.json({ error: validation.errors.all() });
     }
-    if (isNaN(req.params.recipeId)) {
-      return res.status(400)
-        .send('Invalid recipeId. recipeId should be a number');
-    }
-    const name = req.body.name;
-    const description = req.body.description;
-    const ingredients = req.body.ingredients;
-    recipe.findOne({
-      where: {
-        id: req.params.recipeId,
-        $and: {
-          userId: req.decoded.id
+    User.findById(decodedId.data.id)
+      .then((user) => {
+        if (!user) {
+          response.status(404)
+            .json({ errorCode: 404, message: 'User not found.' });
         }
-      }
-    })
-      .then((foundRecipe) => {
-        if (foundRecipe) {
-          const update = {
-            name: name.toLowerCase() || foundRecipe.dataValues.name,
-            ingredients: ingredients.toLowerCase() || foundRecipe.dataValues.ingredients,
-            directions: description.toLowerCase() || foundRecipe.dataValues.description
-          };
-          foundRecipe.update(update)
-            .then(updatedRecipe => res.status(200)
-              .json({
-                status: 'Update successful',
-                recipe: updatedRecipe
-              }))
-            .catch(error => res.status(500)
-              .json({
-                status: 'Fail',
-                message: error
-              }));
-        }
-        if (!foundRecipe) {
-          return res.status(404)
-            .json({
-              status: 'Fail',
-              message: `Can't find recipe with id ${req.params.recipeId}`
-            });
-        }
-      })
-      .catch(error => res.status(500)
-        .json({
-          status: 'Fail',
-          error,
-        }));
-    return this;
-  }
-  /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof Recipe
-   */
-  deleteRecipe(req, res) {
-    if (!(req.params.recipeId)) {
-      return res.status(400)
-        .send('Include ID of recipe to delete');
-    }
-    if (isNaN(req.params.recipeId)) {
-      return res.status(400)
-        .send('Invalid recipeId. recipeId should be a number');
-    }
-    recipe.findOne({
-      where: {
-        id: req.params.recipeId,
-        $and: {
-          userId: req.decoded.id
-        }
-      }
-    })
-      .then((foundRecipe) => {
-        if (foundRecipe) {
-          recipe.destroy({
-            where: {
-              id: req.params.recipeId,
-              $and: {
-                userId: req.decoded.id
-              }
-            }
-          })
-            .then(() => res.status(200)
-              .json({
-                status: 'Success',
-                message: 'recipe deleted'
-              }))
-            .catch(error => res.status(500)
-              .send(error));
-        }
-        if (!foundRecipe) {
-          return res.status(404)
-            .json({
-              status: 'Fail',
-              message: `Can't find recipe with id ${req.params.recipeId} by you`
-            });
-        }
-      })
-      .catch(error => res.status(500)
-        .json({
-          status: 'Fail',
-          error,
-        }));
-    return this;
-  }
-  /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof Recipe
-   */
-  getAll(req, res) {
-    if (!req.query.sort) {
-      recipe.findAll()
-        .then((recipes) => {
-          if (recipes) {
-            return res.status(200)
-              .json({
-                status: 'Success',
-                recipes,
-              });
-          }
-          if (!recipes) {
-            return res.status(404)
-              .send('No recipes found');
-          }
+        return Recipe.create({
+          userId: decodedId.data.id,
+          recipeName: request.body.recipeName,
+          ingredientQuantity: request.body.ingredientQuantity,
+          ingredient: request.body.ingredient,
+          recipeDirection: request.body.recipeDirection,
+          recipeImage: request.body.recipeImage
         })
-        .catch(error => res.status(500)
-          .json({
-            error,
-          }));
-    }
-    if (req.query.sort) {
-      recipe.findAll()
-        .then((recipes) => {
-          if (recipes) {
-            const sorted = recipes.sort((a, b) => b.upvote - a.upvote);
-            return res.status(200)
-              .json({
-                status: 'Succes',
-                sorted,
-              });
-          }
-          if (!recipes) {
-            return res.status(200)
-              .send('Currently no recipes');
-          }
-        })
-        .catch(error => res.status(500)
-          .json({
-            status: 'Fail',
-            error,
-          }));
-    }
-    return this;
-  }
+          .then(recipe => response.status(201)
+            .json({ message: 'Recipe created successfully ', recipe }))
+          .catch(error => response.status(404)
+            .send(error.message));
+      })
+      .catch(error => response.status(404)
+        .send(error.message));
+  },
+
   /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @memberof Recipe
+   * Get a single recipe
+   * @param {any} request
+   * @param {any} response
+   * @returns {obj} json
    */
-  viewOne(req, res) {
-    if (!(req.params.recipeId)) {
-      return res.status(400)
-        .send('Include ID of recipe');
-    }
-    if (isNaN(req.params.recipeId)) {
-      return res.status(400)
-        .send('Invalid recipeId. recipeId should be a number');
-    }
-    recipe.findOne({
-      where: { id: req.params.recipeId },
-      include: [
-        { model: models.User, attributes: ['firstName', 'lastName', 'email'] },
-        { model: models.Review, attributes: ['comment'] }
-      ]
-    })
-      .then((foundRecipe) => {
-        if (!foundRecipe) {
-          return res.status(404)
-            .send(`Can't find recipe with id ${req.params.recipeId}`);
+  get(request, response) {
+    return Recipe
+      .findById(request.params.id)
+      .then((recipe) => {
+        if (!recipe) {
+          response.status(404)
+            .json({ message: 'Recipe not found' });
         }
-        if (foundRecipe) {
-          // add reviews
-          return res.status(200)
-            .json({
-              status: 'Success',
-              foundRecipe,
-            });
+        return recipe
+          .update({ views: recipe.views + 1 });
+      })
+      .then((recipe) => {
+        if (!recipe) {
+          response.status(404)
+            .json({ message: 'Recipe not found' });
+        }
+        response.status(200)
+          .json({ recipe });
+      })
+      .catch(error => response.status(400)
+        .json({ error: error.message }));
+  },
+
+  /**
+   * Return all recipes;
+   * @param {any} request
+   * @param {any} response
+   * @returns {obj} obj
+   */
+  getAll(request, response) {
+    return Recipe
+      .findAll()
+      .then(recipes => response.status(200)
+        .json({ message: recipes }))
+      .catch(error => response.status(400)
+        .json(error));
+  },
+
+  delete(request, response) {
+    return Recipe
+      .findById(request.params.id)
+      .then((recipe) => {
+        if (!recipe) {
+          response.status(404)
+            .json({ message: 'Recipe not found' });
+        }
+        const token = request.headers['x-access-token'];
+        if (!token) {
+          return response.status(401)
+            .json({ auth: false, message: 'No token provided.' });
+        } else
+        if (token) {
+          const decodedId = jwt.verify(token, secret);
+          if (decodedId.data.id === recipe.userId) {
+            return recipe
+              .destroy()
+              .then(() => response.status(200)
+                .json({ message: 'Recipe deleted' }))
+              .catch(error => response.status(400)
+                .json(error));
+          }
         }
       })
-      .catch((error) => {
-        console.log(error);
-        return res.status(500)
-          .json({
-            status: 'Fail',
-            error,
-          });
-      });
-    return this;
+      .catch(error => response.status(400)
+        .json(error));
   }
-  /**
-   * 
-   * 
-   * @param {any} req 
-   * @param {any} res 
-   * @returns 
-   * @memberof Recipe
-   */
-  getAllUser(req, res) {
-    recipe.findAll({
-      where: {
-        userId: req.decoded.id
-      },
-      include: [
-				 { model: models.Review, attributes: ['comment'] }
-      ]
-    })
-      .then((all) => {
-        if (!all) {
-          return res.status(404)
-            .send('You currently have no recipes');
-        }
-        if (all) {
-          return res.status(200)
-            .json({
-              status: 'Success',
-              recipes: all
-            });
-        }
-      })
-      .catch(() => {
-        return res.status(500)
-          .send('Unable to find all recipes by you');
-      });
-    return this;
-  }
-}
+};
+
+export default recipeController;
