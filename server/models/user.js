@@ -1,52 +1,50 @@
 export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
       type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
     },
     firstName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      lowercase: true,
+      trim: true,
+      required: true,
+      allowNull: false
     },
     lastName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      lowercase: true,
+      trim: true,
+      required: true,
+      allowNull: false
     },
-    email: {
+    emailAddress: {
       type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
+      lowercase: true,
+      trim: true,
+      required: true,
+      allowNull: false
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
+      trim: true,
+      required: true,
+      allowNull: false
+    }
   });
 
   User.associate = (models) => {
-    User.hasMany(models.Recipe, {
-      foreignKey: 'userId',
-      as: 'recipes',
+    User.hasMany(models.Recipes, {
+      foreignKey: 'userId'
     });
-    User.hasMany(models.Review, {
+    User.hasMany(models.Reviews, {
       foreignKey: 'userId',
-      as: 'reviews',
     });
-    User.hasMany(models.Upvote, {
+    User.hasMany(models.Favorites, {
       foreignKey: 'userId',
-      as: 'upvotes',
-    });
-    User.hasMany(models.Downvote, {
-      foreignKey: 'userId',
-      as: 'downvotes',
-    });
-    User.hasMany(models.Favorite, {
-      foreignKey: 'userId',
-      as: 'favorites',
     });
   };
-
   return User;
 };

@@ -3,38 +3,14 @@ import Validator from 'validatorjs';
 import jwt from 'jsonwebtoken';
 import db from '../models/';
 
-const Recipe = db.Recipes;
-const User = db.User;
-const Review = db.Reviews;
+const { Recipe, User, Review } = db;
 
 dotenv.config();
 const secret = process.env.SECRET_TOKEN;
 
 const reviewsController = {
-
-  // create(req, res) {
-  //   const body = req.body;
-  //   Recipe.findById(req.params.id)
-  //     .then((recipe) => {
-  //       if (!recipe) {
-  //         return res.status(404).json({ code: 404, message: 'This Recipe Does not exit' });
-  //       }
-  //       const token = req.headers['x-access-token'];
-  //       const decodedId = jwt.verify(token, secret);
-  //       return Review.create({
-  //         review: req.body.review,
-  //         recipeId: req.params.id,
-  //         userId: decodedId.data.id
-  //       })
-  //         .then(newrecipe => res.status(201).json({ code: 200, message: 'Review Posted ', data: newrecipe }))
-  //         .catch(error => res.status(404).json(error));
-  //     })
-  //     .catch(error => res.status(400).json(error.message));
-  // }
-
-
   create(request, response) {
-    const body = request.body;
+    const { body } = request;
     const rules = {
       review: 'required|min:3'
     };

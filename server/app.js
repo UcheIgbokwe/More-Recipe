@@ -1,26 +1,21 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import logger from 'morgan';
-import routes from './routes';
+import routes from './routes/index';
 
 const app = express();
-const port = parseInt(process.env.PORT, 10) || 8080;
-
-// routes(routes);
+const port = parseInt(process.env.PORT, 10) || 9000;
+const router = express.Router();
+routes(router);
 
 app.use(logger('dev'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.get('/', (req, res) => {
-  res.json({
-    message: 'welcom'
-  });
-});
 
-app.use('/api/v1', routes);
+app.use('/api/v1', router);
 
-app.get('*', (request, response) => response.status(404).json({ message: 'Nothing to display' }));
+app.get('*', (request, response) => response.status(404).json({ message: 'Route does not exist!' }));
 
 app.listen(port);
 

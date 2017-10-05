@@ -3,9 +3,7 @@ import Validator from 'validatorjs';
 import jwt from 'jsonwebtoken';
 import db from '../models/';
 
-const Recipe = db.Recipes;
-const User = db.User;
-const Review = db.Review;
+const { Recipes, User } = db;
 
 /**
  * Get secret key from environment variable
@@ -15,7 +13,7 @@ const secret = process.env.SECRET_TOKEN;
 
 const recipeController = {
   create(request, response) {
-    const body = request.body;
+    const { body } = request;
     const rules = {
       recipeName: 'required|min:3',
       ingredient: 'required',
@@ -40,7 +38,7 @@ const recipeController = {
           response.status(404)
             .json({ errorCode: 404, message: 'User not found.' });
         }
-        return Recipe.create({
+        return Recipes.create({
           userId: decodedId.data.id,
           recipeName: request.body.recipeName,
           ingredientQuantity: request.body.ingredientQuantity,
@@ -64,7 +62,7 @@ const recipeController = {
    * @returns {obj} json
    */
   get(request, response) {
-    return Recipe
+    return Recipes
       .findById(request.params.id)
       .then((recipe) => {
         if (!recipe) {
@@ -93,7 +91,7 @@ const recipeController = {
    * @returns {obj} obj
    */
   getAll(request, response) {
-    return Recipe
+    return Recipes
       .findAll()
       .then(recipes => response.status(200)
         .json({ message: recipes }))
@@ -102,7 +100,7 @@ const recipeController = {
   },
 
   delete(request, response) {
-    return Recipe
+    return Recipes
       .findById(request.params.id)
       .then((recipe) => {
         if (!recipe) {
@@ -128,7 +126,31 @@ const recipeController = {
       })
       .catch(error => response.status(400)
         .json(error));
-  }
+  },
+
+  update(request, response) {
+    const { body } = request;
+    return Recipes
+      .findById(request.params.id)
+      .then((recipe) => {
+        if (!recipe) {
+          response.status(404)
+            .json({ message: 'Recipe not found.' });
+        }
+        return Recipes
+          .update({
+            recipeName: body.recipeImage,
+            ingredientQuantity: body.ingredientQuantity,
+            ingredient: body.ingredient,
+            recipeDirection: body.recipeDirection,
+            recipeImage: body.recipeImage
+          }, { where: { id: request.params.id } });
+      })
+      .then(updatedRecipe => response.status(200)
+        .json({ message: 'Update successful', updatedRecipe }))
+      .catch(error => response.status(400)
+        .json({ error: error.message }));
+  },
 };
 
 export default recipeController;

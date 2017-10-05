@@ -5,7 +5,7 @@ import Validator from 'validatorjs';
 import _ from 'lodash';
 import db from '../models/';
 
-const { User } = db.User;
+const { User } = db;
 
 dotenv.config();
 const secret = process.env.SECRET_TOKEN;
@@ -19,20 +19,20 @@ const usersController = {
    * @returns {obj} User
    */
   create(request, response) {
-    const { body } = request.body;
+    const { body } = request;
     const rules = {
       firstName: 'required|string',
       lastName: 'required|string',
-      email: 'required|email',
+      emailAddress: 'required|email',
       password: 'required|min:6|max:24|alpha_num',
-      confirmPassword: 'required|same:password'
+      password_confirmation: 'required|same:password'
     };
 
     const validation = new Validator(body, rules);
     if (validation.fails()) {
       return response.json({ error: validation.errors.all() });
     }
-    User.findOne({ where: { email: body.email } })
+    User.findOne({ where: { emailAddress: body.emailAddress } })
       .then((user) => {
         if (user) {
           return response.status(404).json({ message: 'User already exists. Try again.' });
@@ -41,7 +41,7 @@ const usersController = {
         User.create({
           firstName: request.body.firstName,
           lastName: request.body.lastName,
-          email: request.body.email,
+          emailAddress: request.body.emailAddress,
           password: hashedPassword
         })
           .then((savedUser) => {
@@ -60,10 +60,10 @@ const usersController = {
    * @returns {json} user
    */
   login(request, response) {
-    const { body } = request.body;
+    const { body } = request;
 
     const rules = {
-      email: 'required|email',
+      emailAddress: 'required|email',
       password: 'required|min:6|max:24|alpha_num'
     };
 
@@ -81,7 +81,7 @@ const usersController = {
 
     User.findOne({
       where: {
-        email: request.body.email
+        emailAddress: request.body.emailAddress
       }
     })
       .then((user) => {

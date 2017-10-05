@@ -1,7 +1,6 @@
 import db from '../models/';
 
-const Favorites = db.Favorites;
-const Recipes = db.Recipes;
+const { Favorites, Recipes } = db;
 
 const favoritesController = {
   /**

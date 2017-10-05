@@ -1,24 +1,30 @@
 export default (sequelize, DataTypes) => {
-  const Favorite = sequelize.define('Favorite', {
+  const Favorites = sequelize.define('Favorites', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: false
     },
     recipeId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+      allowNull: false
+    }
   });
 
-  Favorite.associate = (models) => {
-    Favorite.belongsTo(models.User, {
+  Favorites.associate = (models) => {
+    Favorites.belongsTo(models.User, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
-    Favorite.belongsTo(models.Recipe, {
+    Favorites.belongsTo(models.Recipes, {
       foreignKey: 'recipeId',
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
     });
   };
-  return Favorite;
+  return Favorites;
 };
