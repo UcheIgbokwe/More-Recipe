@@ -1,99 +1,56 @@
-import { describe, it } from 'mocha';
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import app from '../app';
+import app from '../server/app';
+import models from '../server/models';
 
 chai.use(chaiHttp);
 
-describe('Tests for API endpoints',() =>{
-    describe('Handle valid endpoints', () =>{
-        describe('GET /api/v1/recipe', ()=>{
-            it('it should GET all recipes', (success)=>{
-                chai.request(app).get('/api/v1/recipe').end((error, res)=>{
-                    expect(res).to.have.status(200);
-                    success();
-                });
-            });
+describe('Tests for more-recipes API endpoints', () => {
+  describe('Handle all required endpoints', () => {
+    describe('GET api/v1/recipes', () => {
+      it('should GET all recipes', (done) => {
+        chai.request(app).get('/api/v1/recipes').end((error, response) => {
+          expect(response).to.have.status(200);
+          done();
         });
-        describe('GET /api/v1/recipe/:recipeid', ()=>{
-            it('it should GET a recipe', (success)=>{
-                chai.request(app).get('/api/v1/recipe/1').end((error, res)=>{
-                    expect(res).to.have.status(200);
-                    success();
-                });
-            });
+      });
+
+      it('should not GET all recipes', (done) => {
+        chai.request(app).get('/api/v1/recipe').end((error, response) => {
+          expect(response).to.have.status(404);
+          done();
         });
-        
-        describe('PUT /api/v1/recipe/:recipeid', ()=>{
-            it('it should PUT all recipe', (success)=>{
-                chai.request(app).put('/api/v1/recipe/1').end((error, res)=>{
-                    expect(res).to.have.status(200);
-                    success();
-                });
-            });
-        });
-        describe('DELETE /api/v1/recipe/:recipeid', ()=>{
-            it('it should DELETE a recipe', (success)=>{
-                chai.request(app).delete('/api/v1/recipe/1').end((error, res)=>{
-                    expect(res).to.have.status(200);
-                    success();
-                });
-            });
-        });
+      });
     });
 
-    describe('Handle invalid endpoints',()=>{
-        describe('GET /api/v1/recipe',()=>{
-            it('it should GET all recipes returns false',(success)=>{
-                chai.request(app).get('/api/v1/recip').end((error, res)=>{
-                    expect(res).to.have.status(404);
-                    success();
-                });
-            });
+    describe('GET api/v1/recipes/:id', () => {
+      it('should GET a recipe', (done) => {
+        chai.request(app).get('/api/v1/recipes/1').end((error, response) => {
+          expect(response).to.have.status(200);
+          done();
         });
+      });
 
-        describe('POST /api/v1/recipe',()=>{
-            it('it should POST a recipe return false',(success)=>{
-                chai.request(app).post('/api/v1/recip').end((error, res)=>{
-                    expect(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
-        describe('PUT /api/v1/recipe',()=>{
-            it('it should PUT a recipe return false',(success)=>{
-                chai.request(app).put('/api/v1/recipe/:-1').end((error, res)=>{
-                    expect(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
-
-        describe('DELETE /api/v1/recipe',()=>{
-            it('it should DELETE a recipe return false',(success)=>{
-                chai.request(app).delete('/api/v1/recipe/-1').end((error, res)=>{
-                    expect(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
-
-        describe('PUT /api/v1/recipe',()=>{
-            it('it should PUT a recipe return false',(success)=>{
-                chai.request(app).put('/api/v1/recipe/:200').end((error, res)=>{
-                    expect(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
-
-        describe('DELETE /api/v1/recipe',()=>{
-            it('it should DELETE a recipe return false',(success)=>{
-                chai.request(app).delete('/api/v1/recipe/-1').end((error, res)=>{
-                    expect(res).to.have.status(404);
-                    success();
-                });
-            });
-        });
+      // it('should not GET a recipe', (done) => {
+      //   chai.request(app).get('/api/v1/recipes/1000').end((error, response) => {
+      //     expect(response).to.have.status(404);
+      //     done();
+      //   });
+      // });
     });
+
+    describe('About page', () => {
+      it('should return true if "About" page does not exist', () => {
+        chai.request('/api/v1/about', (error, response) => {
+          expect(response.statusCode).to.equal(404);
+        });
+      });
+
+      it('should return true if "Contact" page does not exist', () => {
+        chai.request('/api/v1/contact', (error, response) => {
+          expect(response.statusCode).to.equal(404);
+        });
+      });
+    });
+  });
 });
