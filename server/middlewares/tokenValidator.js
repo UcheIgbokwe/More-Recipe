@@ -4,7 +4,8 @@ import db from '../models';
 
 dotenv.config();
 const secret = process.env.SECRET_TOKEN;
-const { User } = db.User;
+const  User  = db.User;
+console.log(User);
 
 const authourization = {
   verifyToken(req, res, next) {

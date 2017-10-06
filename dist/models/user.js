@@ -7,52 +7,50 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = function (sequelize, DataTypes) {
   var User = sequelize.define('User', {
     id: {
-      allowNull: false,
-      autoIncrement: true,
+      type: DataTypes.INTEGER,
       primaryKey: true,
-      type: DataTypes.INTEGER
+      autoIncrement: true,
+      allowNull: false
     },
     firstName: {
       type: DataTypes.STRING,
+      lowercase: true,
+      trim: true,
+      required: true,
       allowNull: false
     },
     lastName: {
       type: DataTypes.STRING,
+      lowercase: true,
+      trim: true,
+      required: true,
       allowNull: false
     },
-    email: {
+    emailAddress: {
       type: DataTypes.STRING,
-      unique: true,
+      lowercase: true,
+      trim: true,
+      required: true,
       allowNull: false
     },
     password: {
       type: DataTypes.STRING,
+      trim: true,
+      required: true,
       allowNull: false
     }
   });
 
   User.associate = function (models) {
-    User.hasMany(models.Recipe, {
-      foreignKey: 'userId',
-      as: 'recipes'
+    User.hasMany(models.Recipes, {
+      foreignKey: 'userId'
     });
-    User.hasMany(models.Review, {
-      foreignKey: 'userId',
-      as: 'reviews'
+    User.hasMany(models.Reviews, {
+      foreignKey: 'userId'
     });
-    User.hasMany(models.Upvote, {
-      foreignKey: 'userId',
-      as: 'upvotes'
-    });
-    User.hasMany(models.Downvote, {
-      foreignKey: 'userId',
-      as: 'downvotes'
-    });
-    User.hasMany(models.Favorite, {
-      foreignKey: 'userId',
-      as: 'favorites'
+    User.hasMany(models.Favorites, {
+      foreignKey: 'userId'
     });
   };
-
   return User;
 };

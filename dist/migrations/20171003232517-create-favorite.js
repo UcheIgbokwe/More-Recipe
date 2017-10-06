@@ -9,13 +9,25 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      recipeId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Users',
+          key: 'id',
+          as: 'userId'
+        }
+      },
+      recipeId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Recipes',
+          key: 'id',
+          as: 'recipeId'
+        }
       },
       createdAt: {
         allowNull: false,
@@ -27,7 +39,7 @@ module.exports = {
       }
     });
   },
-  down: function down(queryInterface, Sequelize) {
+  down: function down(queryInterface) {
     return queryInterface.dropTable('Favorites');
   }
 };

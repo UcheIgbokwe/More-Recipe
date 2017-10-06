@@ -22,38 +22,18 @@ var _models2 = _interopRequireDefault(_models);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Recipe = _models2.default.Recipes;
-var User = _models2.default.User;
-var Review = _models2.default.Reviews;
+var Recipe = _models2.default.Recipe,
+    User = _models2.default.User,
+    Review = _models2.default.Review;
+
 
 _dotenv2.default.config();
 var secret = process.env.SECRET_TOKEN;
 
 var reviewsController = {
-
-  // create(req, res) {
-  //   const body = req.body;
-  //   Recipe.findById(req.params.id)
-  //     .then((recipe) => {
-  //       if (!recipe) {
-  //         return res.status(404).json({ code: 404, message: 'This Recipe Does not exit' });
-  //       }
-  //       const token = req.headers['x-access-token'];
-  //       const decodedId = jwt.verify(token, secret);
-  //       return Review.create({
-  //         review: req.body.review,
-  //         recipeId: req.params.id,
-  //         userId: decodedId.data.id
-  //       })
-  //         .then(newrecipe => res.status(201).json({ code: 200, message: 'Review Posted ', data: newrecipe }))
-  //         .catch(error => res.status(404).json(error));
-  //     })
-  //     .catch(error => res.status(400).json(error.message));
-  // }
-
-
   create: function create(request, response) {
     var body = request.body;
+
     var rules = {
       review: 'required|min:3'
     };

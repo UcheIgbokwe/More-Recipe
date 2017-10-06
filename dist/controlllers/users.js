@@ -30,8 +30,11 @@ var _models2 = _interopRequireDefault(_models);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var User = _models2.default.User.User;
+var User = _models2.default.User;
 
+/**
+ * Get secret key from environment variable
+ */
 
 _dotenv2.default.config();
 var secret = process.env.SECRET_TOKEN;
@@ -45,21 +48,25 @@ var usersController = {
    * @returns {obj} User
    */
   create: function create(request, response) {
-    var body = request.body.body;
+    var body = request.body;
+
+    /**
+    * Requirments
+    */
 
     var rules = {
       firstName: 'required|string',
       lastName: 'required|string',
-      email: 'required|email',
+      emailAddress: 'required|email',
       password: 'required|min:6|max:24|alpha_num',
-      confirmPassword: 'required|same:password'
+      password_confirmation: 'required|same:password'
     };
 
     var validation = new _validatorjs2.default(body, rules);
     if (validation.fails()) {
       return response.json({ error: validation.errors.all() });
     }
-    User.findOne({ where: { email: body.email } }).then(function (user) {
+    User.findOne({ where: { emailAddress: body.emailAddress } }).then(function (user) {
       if (user) {
         return response.status(404).json({ message: 'User already exists. Try again.' });
       }
@@ -67,7 +74,7 @@ var usersController = {
       User.create({
         firstName: request.body.firstName,
         lastName: request.body.lastName,
-        email: request.body.email,
+        emailAddress: request.body.emailAddress,
         password: hashedPassword
       }).then(function (savedUser) {
         var data = _lodash2.default.pick(savedUser, ['id', 'firstName', 'lastName']);
@@ -89,11 +96,14 @@ var usersController = {
    * @returns {json} user
    */
   login: function login(request, response) {
-    var body = request.body.body;
+    var body = request.body;
 
+    /**
+    * Requirements
+    */
 
     var rules = {
-      email: 'required|email',
+      emailAddress: 'required|email',
       password: 'required|min:6|max:24|alpha_num'
     };
 
@@ -111,7 +121,7 @@ var usersController = {
 
     User.findOne({
       where: {
-        email: request.body.email
+        emailAddress: request.body.emailAddress
       }
     }).then(function (user) {
       if (!user) {

@@ -21,6 +21,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _dotenv2.default.config();
 var secret = process.env.SECRET_TOKEN;
 var User = _models2.default.User;
+console.log(User);
 
 var authourization = {
   verifyToken: function verifyToken(req, res, next) {

@@ -5,7 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (sequelize, DataTypes) {
-  var Favorite = sequelize.define('Favorite', {
+  var Favorites = sequelize.define('Favorites', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -16,15 +22,15 @@ exports.default = function (sequelize, DataTypes) {
     }
   });
 
-  Favorite.associate = function (models) {
-    Favorite.belongsTo(models.User, {
+  Favorites.associate = function (models) {
+    Favorites.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
-    Favorite.belongsTo(models.Recipe, {
+    Favorites.belongsTo(models.Recipes, {
       foreignKey: 'recipeId',
       onDelete: 'CASCADE'
     });
   };
-  return Favorite;
+  return Favorites;
 };

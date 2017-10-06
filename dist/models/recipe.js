@@ -5,36 +5,34 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (sequelize, DataTypes) {
-  var Recipe = sequelize.define('Recipe', {
-    userId: {
+  var Recipe = sequelize.define('Recipes', {
+    id: {
       type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
       allowNull: false
     },
-    name: {
+    userId: {
+      type: DataTypes.INTEGER
+    },
+    recipeName: {
       type: DataTypes.STRING,
-      allowNull: false
+      trim: true
     },
-    ingredients: {
-      type: DataTypes.STRING,
-      allowNull: false
+    ingredientQuantity: {
+      type: DataTypes.STRING
     },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false
+    ingredient: {
+      type: DataTypes.STRING
+    },
+    recipeDirection: {
+      type: DataTypes.TEXT
+    },
+    recipeImage: {
+      type: DataTypes.TEXT
     },
     views: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 0
-    },
-    upvote: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 0
-    },
-    downvote: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
       defaultValue: 0
     }
   });
@@ -44,23 +42,16 @@ exports.default = function (sequelize, DataTypes) {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
-    Recipe.hasMany(models.Review, {
+
+    Recipe.hasMany(models.Reviews, {
       foreignKey: 'recipeId',
       as: 'reviews'
     });
-    Recipe.hasMany(models.Upvote, {
-      foreignKey: 'recipeId',
-      as: 'Upvotes'
-    });
-    Recipe.hasMany(models.Downvote, {
-      foreignKey: 'recipeId',
-      as: 'Downvotes'
-    });
-    Recipe.hasMany(models.Favorite, {
+
+    Recipe.hasMany(models.Favorites, {
       foreignKey: 'recipeId',
       as: 'favorites'
     });
   };
-
   return Recipe;
 };

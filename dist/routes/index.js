@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _express = require('express');
-
-var _express2 = _interopRequireDefault(_express);
-
 var _users = require('../controlllers/users');
 
 var _users2 = _interopRequireDefault(_users);
@@ -30,33 +26,33 @@ var _favorites2 = _interopRequireDefault(_favorites);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var router = _express2.default.Router();
+var routes = function routes(router) {
+  router.get('/', function (request, response) {
+    response.status(200).send({ message: 'Hello World!' });
+  });
 
-router.get('/', function (request, response) {
-  response.status(200).send({ message: 'Welcome to Recipesforall!' });
-});
+  router.post('/users/signup', _users2.default.create);
+  router.post('/users/signin', _users2.default.login);
 
-router.post('/users/signup', _users2.default.create);
-router.post('/users/signin', _users2.default.login);
+  /**
+   * Recipe routes
+   */
+  router.post('/recipes', _tokenValidator2.default.verifyToken, _recipes2.default.create);
+  router.get('/recipes/:id', _recipes2.default.get);
+  router.get('/recipes', _recipes2.default.getAll);
+  router.delete('/recipes/:id', _tokenValidator2.default.verifyToken, _recipes2.default.delete);
+  router.put('/recipes/:id', _tokenValidator2.default.verifyToken, _recipes2.default.update);
 
-/**
- * Recipe routes
- */
-router.post('/recipes', _tokenValidator2.default.verifyToken, _recipes2.default.create);
-router.get('/recipes/:id', _recipes2.default.get);
-router.get('/recipes', _recipes2.default.getAll);
-router.delete('/recipes/:id', _tokenValidator2.default.verifyToken, _recipes2.default.delete);
-// router.get('/recipes/?sort=upvotes&order=desc', recipesController.getUpVotes);
+  /**
+   * Recipe review routes
+   */
+  router.post('/recipes/:id/reviews', _tokenValidator2.default.verifyToken, _reviews2.default.create);
 
-/**
- * Recipe review routes
- */
-router.post('/recipes/:id/reviews', _tokenValidator2.default.verifyToken, _reviews2.default.create);
+  /**
+   * Recipe favorite routes
+   */
+  router.post('/users/:id/recipes', _tokenValidator2.default.verifyToken, _favorites2.default.create);
+  router.get('/users/:id/recipes', _favorites2.default.getAll);
+};
 
-/**
- * Recipe favorite routes
- */
-router.post('/users/:id/recipes', _tokenValidator2.default.verifyToken, _favorites2.default.create);
-router.get('/users/:id/recipes', _favorites2.default.getAll);
-
-exports.default = router;
+exports.default = routes;

@@ -16,31 +16,26 @@ var _morgan = require('morgan');
 
 var _morgan2 = _interopRequireDefault(_morgan);
 
-var _routes = require('./routes');
+var _index = require('./routes/index');
 
-var _routes2 = _interopRequireDefault(_routes);
+var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
-var port = parseInt(process.env.PORT, 10) || 8080;
-
-// routes(routes);
+var port = parseInt(process.env.PORT, 10) || 9000;
+var router = _express2.default.Router();
+(0, _index2.default)(router);
 
 app.use((0, _morgan2.default)('dev'));
 
 app.use(_bodyParser2.default.json());
 app.use(_bodyParser2.default.urlencoded({ extended: false }));
-app.get('/', function (req, res) {
-  res.json({
-    message: 'welcom'
-  });
-});
 
-app.use('/api/v1', _routes2.default);
+app.use('/api/v1', router);
 
 app.get('*', function (request, response) {
-  return response.status(404).json({ message: 'Nothing to display' });
+  return response.status(404).json({ message: 'Route does not exist!' });
 });
 
 app.listen(port);

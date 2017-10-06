@@ -5,24 +5,22 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (sequelize, DataTypes) {
-  var Review = sequelize.define('Review', {
-    comment: {
-      type: DataTypes.STRING,
+  var Reviews = sequelize.define('Reviews', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
       allowNull: false
     },
     userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.INTEGER
     },
     recipeId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.INTEGER
+    },
+    review: {
+      type: DataTypes.TEXT
     }
   });
-  Review.associate = function (models) {
-    // associations can be defined here
-    Review.belongsTo(models.User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-    Review.belongsTo(models.Recipe, { foreignKey: 'recipeId', onDelete: 'CASCADE' });
-  };
-  return Review;
+  return Reviews;
 };

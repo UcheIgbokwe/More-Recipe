@@ -22,9 +22,10 @@ var _models2 = _interopRequireDefault(_models);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Recipe = _models2.default.Recipes;
-var User = _models2.default.User;
-var Review = _models2.default.Review;
+var Recipes = _models2.default.Recipes,
+    User = _models2.default.User;
+
+console.log(Recipes, User);
 
 /**
  * Get secret key from environment variable
@@ -32,15 +33,18 @@ var Review = _models2.default.Review;
 _dotenv2.default.config();
 var secret = process.env.SECRET_TOKEN;
 
+/**
+ * Requirements
+ */
 var recipeController = {
   create: function create(request, response) {
     var body = request.body;
+
     var rules = {
       recipeName: 'required|min:3',
       ingredient: 'required',
       recipeDirection: 'required:min:6'
     };
-
     var token = request.headers['x-access-token'];
     if (!token) {
       return response.status(401).send({ auth: false, message: 'No token provided.' });
@@ -56,7 +60,7 @@ var recipeController = {
       if (!user) {
         response.status(404).json({ errorCode: 404, message: 'User not found.' });
       }
-      return Recipe.create({
+      return Recipes.create({
         userId: decodedId.data.id,
         recipeName: request.body.recipeName,
         ingredientQuantity: request.body.ingredientQuantity,
@@ -81,7 +85,7 @@ var recipeController = {
    * @returns {obj} json
    */
   get: function get(request, response) {
-    return Recipe.findById(request.params.id).then(function (recipe) {
+    return Recipes.findById(request.params.id).then(function (recipe) {
       if (!recipe) {
         response.status(404).json({ message: 'Recipe not found' });
       }
@@ -104,14 +108,14 @@ var recipeController = {
    * @returns {obj} obj
    */
   getAll: function getAll(request, response) {
-    return Recipe.findAll().then(function (recipes) {
+    return Recipes.findAll().then(function (recipes) {
       return response.status(200).json({ message: recipes });
     }).catch(function (error) {
       return response.status(400).json(error);
     });
   },
   delete: function _delete(request, response) {
-    return Recipe.findById(request.params.id).then(function (recipe) {
+    return Recipes.findById(request.params.id).then(function (recipe) {
       if (!recipe) {
         response.status(404).json({ message: 'Recipe not found' });
       }
@@ -130,6 +134,26 @@ var recipeController = {
       }
     }).catch(function (error) {
       return response.status(400).json(error);
+    });
+  },
+  update: function update(request, response) {
+    var body = request.body;
+
+    return Recipes.findById(request.params.id).then(function (recipe) {
+      if (!recipe) {
+        response.status(404).json({ message: 'Recipe not found.' });
+      }
+      return Recipes.update({
+        recipeName: body.recipeImage,
+        ingredientQuantity: body.ingredientQuantity,
+        ingredient: body.ingredient,
+        recipeDirection: body.recipeDirection,
+        recipeImage: body.recipeImage
+      }, { where: { id: request.params.id } });
+    }).then(function (updatedRecipe) {
+      return response.status(200).json({ message: 'Update successful', updatedRecipe: updatedRecipe });
+    }).catch(function (error) {
+      return response.status(400).json({ error: error.message });
     });
   }
 };

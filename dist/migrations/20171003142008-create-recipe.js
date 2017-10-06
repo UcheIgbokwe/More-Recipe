@@ -9,35 +9,33 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Users',
+          key: 'id',
+          as: 'userId'
+        }
       },
-      ingredients: {
-        type: Sequelize.STRING,
-        allowNull: false
+      recipeName: {
+        type: Sequelize.STRING
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: false
+      ingredientQuantity: {
+        type: Sequelize.STRING
+      },
+      ingredient: {
+        type: Sequelize.STRING
+      },
+      recipeDirection: {
+        type: Sequelize.TEXT
+      },
+      recipeImage: {
+        type: Sequelize.TEXT
       },
       views: {
         type: Sequelize.INTEGER,
-        allowNull: true,
-        defaultValue: 0
-      },
-      upvote: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        defaultValue: 0
-      },
-      downvote: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
         defaultValue: 0
       },
       createdAt: {
@@ -50,7 +48,7 @@ module.exports = {
       }
     });
   },
-  down: function down(queryInterface, Sequelize) {
+  down: function down(queryInterface) {
     return queryInterface.dropTable('Recipes');
   }
 };

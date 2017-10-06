@@ -10,8 +10,9 @@ var _models2 = _interopRequireDefault(_models);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Favorites = _models2.default.Favorites;
-var Recipes = _models2.default.Recipes;
+var Favorites = _models2.default.Favorites,
+    Recipes = _models2.default.Recipes;
+
 
 var favoritesController = {
   /**

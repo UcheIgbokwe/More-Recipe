@@ -7,6 +7,10 @@ import db from '../models/';
 
 const { User } = db;
 
+/**
+ * Get secret key from environment variable
+ */
+
 dotenv.config();
 const secret = process.env.SECRET_TOKEN;
 
@@ -20,6 +24,10 @@ const usersController = {
    */
   create(request, response) {
     const { body } = request;
+
+    /**
+ * Requirments
+ */
     const rules = {
       firstName: 'required|string',
       lastName: 'required|string',
@@ -61,6 +69,10 @@ const usersController = {
    */
   login(request, response) {
     const { body } = request;
+
+    /**
+ * Requirements
+ */
 
     const rules = {
       emailAddress: 'required|email',

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import db from '../models/';
 
 const { Recipes, User } = db;
+console.log (Recipes, User);
 
 /**
  * Get secret key from environment variable
@@ -11,6 +12,9 @@ const { Recipes, User } = db;
 dotenv.config();
 const secret = process.env.SECRET_TOKEN;
 
+/**
+ * Requirements
+ */
 const recipeController = {
   create(request, response) {
     const { body } = request;
@@ -19,7 +23,6 @@ const recipeController = {
       ingredient: 'required',
       recipeDirection: 'required:min:6'
     };
-
     const token = request.headers['x-access-token'];
     if (!token) {
       return response.status(401)

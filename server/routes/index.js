@@ -7,7 +7,7 @@ import favoritesController from '../controlllers/favorites';
 const routes = (router) => {
   router.get('/', (request, response) => {
     response.status(200)
-      .send({ message: 'Welcome to more-recipes!' });
+      .send({ message: 'Hello World!' });
   });
 
   router.post('/users/signup', usersController.create);
@@ -21,7 +21,6 @@ const routes = (router) => {
   router.get('/recipes', recipesController.getAll);
   router.delete('/recipes/:id', authorization.verifyToken, recipesController.delete);
   router.put('/recipes/:id', authorization.verifyToken, recipesController.update);
-  // router.get('/recipes/?sort=upvotes&order=desc', recipesController.getUpVotes);
 
   /**
    * Recipe review routes
