@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import db from '../models/';
 
 const { Recipes, User } = db;
-console.log (Recipes, User);
 
 /**
  * Get secret key from environment variable
@@ -12,17 +11,14 @@ console.log (Recipes, User);
 dotenv.config();
 const secret = process.env.SECRET_TOKEN;
 
-/**
- * Requirements
- */
 const recipeController = {
   create(request, response) {
-    const { body } = request;
     const rules = {
       recipeName: 'required|min:3',
       ingredient: 'required',
       recipeDirection: 'required:min:6'
     };
+
     const token = request.headers['x-access-token'];
     if (!token) {
       return response.status(401)
@@ -31,18 +27,18 @@ const recipeController = {
 
     const decodedId = jwt.verify(token, secret);
 
-    const validation = new Validator(body, rules);
+    const validation = new Validator(response.body, rules);
     if (validation.fails()) {
       return response.json({ error: validation.errors.all() });
     }
-    User.findById(decodedId.data.id)
+    User.findById(1)
       .then((user) => {
         if (!user) {
           response.status(404)
             .json({ errorCode: 404, message: 'User not found.' });
         }
         return Recipes.create({
-          userId: decodedId.data.id,
+          userId: 1,
           recipeName: request.body.recipeName,
           ingredientQuantity: request.body.ingredientQuantity,
           ingredient: request.body.ingredient,
@@ -102,6 +98,12 @@ const recipeController = {
         .json(error));
   },
 
+  /**
+   * Delete a recipe
+   * @param {any} request
+   * @param {any} response
+   * @returns {json} json
+   */
   delete(request, response) {
     return Recipes
       .findById(request.params.id)
@@ -131,6 +133,12 @@ const recipeController = {
         .json(error));
   },
 
+  /**
+   * Update a recipe
+   * @param {any} request
+   * @param {any} response
+   * @returns {json} json
+   */
   update(request, response) {
     const { body } = request;
     return Recipes
@@ -154,6 +162,21 @@ const recipeController = {
       .catch(error => response.status(400)
         .json({ error: error.message }));
   },
+
+  sort(request, response) {
+    if (request.query.sort) {
+      return Recipes
+        .findAll({
+          order: [
+            ['upVotes', 'DESC']
+          ]
+        })
+        .then(allSortedRecipes => response.status(200)
+          .json({ SortedRecipes: allSortedRecipes }))
+        .catch(error => response.status(400)
+          .json({ error: error.message }));
+    }
+  }
 };
 
 export default recipeController;
