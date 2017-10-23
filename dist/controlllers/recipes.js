@@ -22,20 +22,15 @@ var _models2 = _interopRequireDefault(_models);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Recipes = _models2.default.Recipes,
-    User = _models2.default.User;
-
-console.log(Recipes, User);
+var Recipes = _models2.default.Recipes;
 
 /**
  * Get secret key from environment variable
  */
+
 _dotenv2.default.config();
 var secret = process.env.SECRET_TOKEN;
 
-/**
- * Requirements
- */
 var recipeController = {
   create: function create(request, response) {
     var body = request.body;
@@ -45,33 +40,21 @@ var recipeController = {
       ingredient: 'required',
       recipeDirection: 'required:min:6'
     };
-    var token = request.headers['x-access-token'];
-    if (!token) {
-      return response.status(401).send({ auth: false, message: 'No token provided.' });
-    }
-
-    var decodedId = _jsonwebtoken2.default.verify(token, secret);
 
     var validation = new _validatorjs2.default(body, rules);
     if (validation.fails()) {
       return response.json({ error: validation.errors.all() });
     }
-    User.findById(decodedId.data.id).then(function (user) {
-      if (!user) {
-        response.status(404).json({ errorCode: 404, message: 'User not found.' });
-      }
-      return Recipes.create({
-        userId: decodedId.data.id,
-        recipeName: request.body.recipeName,
-        ingredientQuantity: request.body.ingredientQuantity,
-        ingredient: request.body.ingredient,
-        recipeDirection: request.body.recipeDirection,
-        recipeImage: request.body.recipeImage
-      }).then(function (recipe) {
-        return response.status(201).json({ message: 'Recipe created successfully ', recipe: recipe });
-      }).catch(function (error) {
-        return response.status(404).send(error.message);
-      });
+
+    Recipes.create({
+      userId: request.decoded.id,
+      recipeName: request.body.recipeName,
+      ingredientQuantity: request.body.ingredientQuantity,
+      ingredient: request.body.ingredient,
+      recipeDirection: request.body.recipeDirection,
+      recipeImage: request.body.recipeImage
+    }).then(function (recipe) {
+      return response.status(201).json({ message: 'Recipe created successfully ', recipe: recipe });
     }).catch(function (error) {
       return response.status(404).send(error.message);
     });
@@ -114,6 +97,14 @@ var recipeController = {
       return response.status(400).json(error);
     });
   },
+
+
+  /**
+   * Delete a recipe
+   * @param {any} request
+   * @param {any} response
+   * @returns {json} json
+   */
   delete: function _delete(request, response) {
     return Recipes.findById(request.params.id).then(function (recipe) {
       if (!recipe) {
@@ -136,6 +127,14 @@ var recipeController = {
       return response.status(400).json(error);
     });
   },
+
+
+  /**
+   * Update a recipe
+   * @param {any} request
+   * @param {any} response
+   * @returns {json} json
+   */
   update: function update(request, response) {
     var body = request.body;
 
@@ -155,6 +154,17 @@ var recipeController = {
     }).catch(function (error) {
       return response.status(400).json({ error: error.message });
     });
+  },
+  sort: function sort(request, response) {
+    if (request.query.sort) {
+      return Recipes.findAll({
+        order: [['upVotes', 'DESC']]
+      }).then(function (allSortedRecipes) {
+        return response.status(200).json({ SortedRecipes: allSortedRecipes });
+      }).catch(function (error) {
+        return response.status(400).json({ error: error.message });
+      });
+    }
   }
 };
 

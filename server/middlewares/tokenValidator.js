@@ -4,22 +4,22 @@ import db from '../models';
 
 dotenv.config();
 const secret = process.env.SECRET_TOKEN;
-const  User  = db.User;
+const User = db.User;
 
 const authourization = {
   verifyToken(req, res, next) {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (token) {
-      jwt.verify(token, secret, (error, decodedId) => {
+      jwt.verify(token, secret, (error, decoded) => {
         if (error) {
           return res.status(401).json({ message: error.message });
         }
-        User.findById(decodedId.id)
+        User.findById(decoded.id)
           .then((user) => {
             if (!user) {
               return res.json({ message: error.message });
             }
-            req.decodedId.id = decodedId;
+            req.decoded = decoded;
             return next();
           })
           .catch(err => res.status(404).json({ error: err.message }));

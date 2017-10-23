@@ -32,7 +32,7 @@ module.exports = {
         type: Sequelize.TEXT
       },
       recipeImage: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
       },
       views: {
         type: Sequelize.INTEGER,

@@ -21,7 +21,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _dotenv2.default.config();
 var secret = process.env.SECRET_TOKEN;
 var User = _models2.default.User;
-console.log(User);
 
 var authourization = {
   verifyToken: function verifyToken(req, res, next) {
@@ -31,11 +30,11 @@ var authourization = {
         if (error) {
           return res.status(401).json({ message: error.message });
         }
-        User.findById(decoded.data.id).then(function (user) {
+        User.findById(decoded.id).then(function (user) {
           if (!user) {
             return res.json({ message: error.message });
           }
-          req.decoded = decoded.data;
+          req.decoded = decoded;
           return next();
         }).catch(function (err) {
           return res.status(404).json({ error: err.message });
